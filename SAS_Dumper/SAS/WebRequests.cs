@@ -51,6 +51,11 @@ namespace Chrxw.SAS_Dumper.SAS
                 };
             }
 
+            if(payload.Count == 0)
+            {
+                return Task.CompletedTask;
+            }
+
             HttpRequestMessage request = new(HttpMethod.Post, "/adv/bots/muli") {
                 Content = JsonContent.Create(payload)
             };
