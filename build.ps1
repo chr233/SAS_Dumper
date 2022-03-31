@@ -1,4 +1,4 @@
-$proj_name = "ASFEnhance";
+$proj_name = "SAS_Dumper";
 $folder_tmp = ".\tmp";
 $folder_dist = ".\dist";
 $folder_obj = ".\$proj_name\obj";
