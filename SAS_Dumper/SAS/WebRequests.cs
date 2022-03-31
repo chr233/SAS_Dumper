@@ -51,20 +51,18 @@ namespace Chrxw.SAS_Dumper.SAS
                 };
             }
 
-            if(payload.Count == 0)
+            if (payload.Count > 0)
             {
-                return Task.CompletedTask;
+                HttpRequestMessage request = new(HttpMethod.Post, "/adv/bots/muli") {
+                    Content = JsonContent.Create(payload)
+                };
+
+                HttpResponseMessage response = await Http.SendAsync(request).ConfigureAwait(false);
+
+                bool success = response.StatusCode == HttpStatusCode.OK;
+
+                ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.SASFeedStatus, success ? Langs.Success : Langs.Failure));
             }
-
-            HttpRequestMessage request = new(HttpMethod.Post, "/adv/bots/muli") {
-                Content = JsonContent.Create(payload)
-            };
-
-            HttpResponseMessage response = await Http.SendAsync(request).ConfigureAwait(false);
-
-            bool success = response.StatusCode == HttpStatusCode.OK;
-
-            ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.SASFeedStatus, success ? Langs.Success : Langs.Failure));
         }
     }
 }
