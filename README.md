@@ -1,12 +1,8 @@
 # SAS_Dumper
 
-[![AutoBuild][workflow_b]][workflow] [![Codacy Badge][codacy_b]][codacy] [![release][release_b]][release] [![Download][download_b]][release] [![License][license_b]][license]
-
-[English](README.md)
+[![AutoBuild][workflow_b]][workflow] [![release][release_b]][release] [![Download][download_b]][release] [![License][license_b]][license]
 
 ## 新增命令
-
-### 实用功能
 
 | 命令        | 缩写   | 权限     | 说明                    |
 | ----------- | ------ | -------- | ----------------------- |
