@@ -112,18 +112,18 @@ namespace Chrxw.SAS_Dumper
                     switch (args[0].ToUpperInvariant())
                     {
                         //Other
-                        case "SASDUMPER" when access > EAccess.Master:
-                        case "SASD" when access > EAccess.Master:
+                        case "SASDUMPER" when access >= EAccess.Master:
+                        case "SASD" when access >= EAccess.Master:
                             return Other.Command.ResponseSASDumperVersion();
 
                         //SAS
-                        case "SASTEST" when PluginEnabled && access > EAccess.Master:
+                        case "SASTEST" when PluginEnabled && access >= EAccess.Master:
                             return await SAS.Command.ResponseSASTest().ConfigureAwait(false);
 
-                        case "SASON" when PluginEnabled && access > EAccess.Master:
+                        case "SASON" when PluginEnabled && access >= EAccess.Master:
                             return SAS.Command.ResponseSASController(true);
 
-                        case "SASTOFF" when PluginEnabled && access > EAccess.Master:
+                        case "SASTOFF" when PluginEnabled && access >= EAccess.Master:
                             return SAS.Command.ResponseSASController(false);
 
                         default:
