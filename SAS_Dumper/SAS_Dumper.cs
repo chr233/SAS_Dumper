@@ -8,8 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Composition;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using static Chrxw.SAS_Dumper.Utils;
 
 namespace Chrxw.SAS_Dumper
