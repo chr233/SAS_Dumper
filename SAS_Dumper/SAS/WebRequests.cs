@@ -6,7 +6,10 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Converters;
 using static Chrxw.SAS_Dumper.Utils;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace Chrxw.SAS_Dumper.SAS
 {
@@ -53,8 +56,10 @@ namespace Chrxw.SAS_Dumper.SAS
 
             if (payload.Count > 0)
             {
+                string json = JsonConvert.SerializeObject(payload);
+
                 HttpRequestMessage request = new(HttpMethod.Post, "/adv/bots/muli") {
-                    Content = JsonContent.Create(payload)
+                    Content = new StringContent(json, Encoding.UTF8, "application/json")
                 };
 
                 HttpResponseMessage response = await Http.SendAsync(request).ConfigureAwait(false);
