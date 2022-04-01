@@ -40,9 +40,11 @@ namespace Chrxw.SAS_Dumper.SAS
         {
             HashSet<Dictionary<string, string>> payload = new();
 
+            HashSet<string> botNames = new();
+
             foreach (string name in BotInfoDict.Keys)
             {
-                if (BotInfoDict.TryRemove(name, out BotInfo binfo))
+                if (BotInfoDict.TryGetValue(name, out BotInfo binfo))
                 {
                     string steamID = binfo.SteamID.ToString();
                     string token = binfo.AccessToken;
@@ -51,6 +53,7 @@ namespace Chrxw.SAS_Dumper.SAS
                         { "access_token", token },
                         { "desc", name }
                     });
+                    botNames.Add(name);
                 };
             }
 
@@ -67,6 +70,14 @@ namespace Chrxw.SAS_Dumper.SAS
                 bool success = response.StatusCode == HttpStatusCode.OK;
 
                 ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.SASFeedStatus, success ? Langs.Success : Langs.Failure));
+
+                if (success)
+                {
+                    foreach (string name in botNames)
+                    {
+                        BotInfoDict.TryRemove(name, out BotInfo _);
+                    }
+                }
             }
         }
     }
