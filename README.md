@@ -2,7 +2,7 @@
 
 [![AutoBuild][workflow_b]][workflow] [![release][release_b]][release] [![Download][download_b]][release] [![License][license_b]][license]
 
-## 新增命令
+## 命令列表
 
 | 命令        | 缩写   | 权限     | 说明                    |
 | ----------- | ------ | -------- | ----------------------- |
@@ -10,6 +10,7 @@
 | `SASTEST`   | -      | `Master` | 测试与 SAS 后台能否连接 |
 | `SASON`     | -      | `Master` | 启用自动汇报            |
 | `SASTOFF`   | -      | `Master` | 禁用自动汇报            |
+| `SASMANUAL` | -      | `Master` | 手动汇报所有在线机器人  |
 
 ## 下载链接
 

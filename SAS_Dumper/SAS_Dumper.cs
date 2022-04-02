@@ -31,9 +31,7 @@ namespace Chrxw.SAS_Dumper
         /// <returns></returns>
         public Task OnASFInit(IReadOnlyDictionary<string, JToken> additionalConfigProperties = null)
         {
-#pragma warning disable CS8632 // 只能在 "#nullable" 注释上下文内的代码中使用可为 null 的引用类型的注释。
             Config? config = null;
-#pragma warning restore CS8632 // 只能在 "#nullable" 注释上下文内的代码中使用可为 null 的引用类型的注释。
 
             if (additionalConfigProperties != null)
             {
@@ -126,6 +124,9 @@ namespace Chrxw.SAS_Dumper
                         case "SASTOFF" when PluginEnabled && access >= EAccess.Master:
                             return SAS.Command.ResponseSASController(false);
 
+                        case "SASMANUAL" when PluginEnabled && access >= EAccess.Master:
+                            return await SAS.Command.ResponseSASManualFeedbackAsync().ConfigureAwait(false);
+
                         default:
                             return null;
                     }
@@ -141,19 +142,19 @@ namespace Chrxw.SAS_Dumper
         /// </summary>
         /// <param name="bot"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        async Task IBotConnection.OnBotLoggedOn(Bot bot)
+        public async Task OnBotLoggedOn(Bot bot)
         {
-#pragma warning disable CS8632 // 只能在 "#nullable" 注释上下文内的代码中使用可为 null 的引用类型的注释。
-            (bool success, string? accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
-#pragma warning restore CS8632 // 只能在 "#nullable" 注释上下文内的代码中使用可为 null 的引用类型的注释。
-            if (success)
+            if (SASConfig.Enabled)
             {
-                BotInfoDict.TryAdd(bot.BotName, new(bot.SteamID, accessToken));
-            }
-            else
-            {
-                ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.FetchTokenFailure, bot.BotName));
+                (bool success, string? accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
+                if (success)
+                {
+                    BotInfoDict.TryAdd(bot.BotName, new(bot.SteamID, accessToken));
+                }
+                else
+                {
+                    ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.FetchTokenFailure, bot.BotName));
+                }
             }
         }
 
@@ -163,7 +164,6 @@ namespace Chrxw.SAS_Dumper
         /// <param name="bot"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public Task OnBotDisconnected(Bot bot, EResult reason)
         {
             return Task.CompletedTask;

@@ -145,9 +145,21 @@
     <value>失败</value>
   </data>
   <data name="SASFeedStatus" xml:space="preserve">
-    <value>SAS汇报结果: {0}</value>
+    <value>SAS汇报 {0} 个Bot, 成功 {1} 个, 失败 {2} 个</value>
   </data>
   <data name="FetchTokenFailure" xml:space="preserve">
     <value>机器人 {0} 读取AccessToken失败</value>
+  </data>
+  <data name="SASAddBotFailed" xml:space="preserve">
+    <value>SAS添加机器人失败 {0}</value>
+  </data>
+  <data name="SASFailed" xml:space="preserve">
+    <value>状态码: {0} 返回值: {1}</value>
+  </data>
+  <data name="NoBotsAvilable" xml:space="preserve">
+    <value>无可用机器人</value>
+  </data>
+  <data name="SASManual" xml:space="preserve">
+    <value>手动汇报了 {0} 个 Bot</value>
   </data>
 </root>

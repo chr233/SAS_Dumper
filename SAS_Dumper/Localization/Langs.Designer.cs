@@ -97,6 +97,15 @@ namespace Chrxw.SAS_Dumper.Localization {
         }
         
         /// <summary>
+        ///   查找类似 无可用机器人 的本地化字符串。
+        /// </summary>
+        internal static string NoBotsAvilable {
+            get {
+                return ResourceManager.GetString("NoBotsAvilable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 作者 Chr_, 联系方式 chr@chrxw.com 的本地化字符串。
         /// </summary>
         internal static string PluginContact {
@@ -133,11 +142,38 @@ namespace Chrxw.SAS_Dumper.Localization {
         }
         
         /// <summary>
-        ///   查找类似 SAS汇报结果: {0} 的本地化字符串。
+        ///   查找类似 SAS添加机器人失败 {0} 的本地化字符串。
+        /// </summary>
+        internal static string SASAddBotFailed {
+            get {
+                return ResourceManager.GetString("SASAddBotFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 状态码: {0} 返回值: {1} 的本地化字符串。
+        /// </summary>
+        internal static string SASFailed {
+            get {
+                return ResourceManager.GetString("SASFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 SAS汇报 {0} 个Bot, 成功 {1} 个, 失败 {2} 个 的本地化字符串。
         /// </summary>
         internal static string SASFeedStatus {
             get {
                 return ResourceManager.GetString("SASFeedStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 手动汇报了 {0} 个 Bot 的本地化字符串。
+        /// </summary>
+        internal static string SASManual {
+            get {
+                return ResourceManager.GetString("SASManual", resourceCulture);
             }
         }
         

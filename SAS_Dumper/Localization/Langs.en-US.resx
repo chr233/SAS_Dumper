@@ -145,9 +145,21 @@
     <value>Failure</value>
   </data>
   <data name="SASFeedStatus" xml:space="preserve">
-    <value>SAS feedback status: {0}</value>
+    <value>SAS feedback : {0} bots, success {1}, failure {2}</value>
   </data>
   <data name="FetchTokenFailure" xml:space="preserve">
     <value>Bot {0} fetch AccessToken failed</value>
+  </data>
+  <data name="SASAddBotFailed" xml:space="preserve">
+    <value>SAS add bot failed {0}</value>
+  </data>
+  <data name="SASFailed" xml:space="preserve">
+    <value>Code: {0} Message: {1}</value>
+  </data>
+  <data name="NoBotsAvilable" xml:space="preserve">
+    <value>No bots avilable</value>
+  </data>
+  <data name="SASManual" xml:space="preserve">
+    <value>Manual feedback {0} bots</value>
   </data>
 </root>
