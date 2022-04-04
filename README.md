@@ -12,6 +12,21 @@
 | `SASTOFF`   | -      | `Master` | 禁用自动汇报            |
 | `SASMANUAL` | -      | `Master` | 手动汇报所有在线机器人  |
 
+## 配置说明
+
+ASF.json
+
+```json
+{
+  "SASConfig": {
+    "Enabled": true,
+    "SASUrl": "http://SASBOTSHOST:PORT/",
+    "SASPasswd": "PASSWD",
+    "FeedbackPeriod": 60
+  }
+}
+```
+
 ## 下载链接
 
 [Releases](https://github.com/chr233/SAS_Dumper/releases)
