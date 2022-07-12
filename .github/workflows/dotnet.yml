@@ -1,0 +1,103 @@
+name: AutoBuild
+
+on: 
+  workflow_dispatch:
+  push:
+    tags:
+    - '*'
+
+env:
+  DOTNET_SDK_VERSION: 6.0.x
+
+jobs:
+  publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1.9.0
+        with:
+          dotnet-version: ${{ env.DOTNET_SDK_VERSION }}
+
+      - name: Verify .NET Core
+        run: dotnet --info
+
+      - name: Restore packages in preparation for SAS_Dumper publishing
+        run: dotnet restore SAS_Dumper -p:ContinuousIntegrationBuild=true --nologo
+
+      - name: Publish SAS_Dumper on Windows
+        shell: pwsh
+        run: |
+          $script = "./build.ps1";
+          Set-Location ${{ github.workspace }};
+          powershell $script;
+
+      - name: Upload SAS_Dumper-zh-CN
+        continue-on-error: true
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: SAS_Dumper-zh-CN
+          path: dist/SAS_Dumper-zh-CN.zip
+
+      - name: Upload SAS_Dumper-en-US
+        continue-on-error: true
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: SAS_Dumper-en-US
+          path: dist/SAS_Dumper-en-US.zip
+
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - name: Download SAS_Dumper-zh-CN artifact from windows-latest
+        uses: actions/download-artifact@v2.0.10
+        with:
+          name: SAS_Dumper-zh-CN
+          path: out
+
+      - name: Download SAS_Dumper-en-US artifact from windows-latest
+        uses: actions/download-artifact@v2.0.10
+        with:
+          name: SAS_Dumper-en-US
+          path: out
+
+      - name: Create SAS_Dumper GitHub release
+        id: github_release
+        uses: actions/create-release@v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: SAS_Dumper ${{ github.ref }}
+          body: release created bt github actions
+          prerelease: false
+
+      - name: Upload SAS_Dumper-zh-CN to GitHub release
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.github_release.outputs.upload_url }}
+          asset_path: out/SAS_Dumper-zh-CN.zip
+          asset_name: SAS_Dumper-zh-CN.zip
+          asset_content_type: application/zip
+     
+      - name: Upload SAS_Dumper-zh-CN to GitHub release
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.github_release.outputs.upload_url }}
+          asset_path: out/SAS_Dumper-en-US.zip
+          asset_name: SAS_Dumper-en-US.zip
+          asset_content_type: application/zip
