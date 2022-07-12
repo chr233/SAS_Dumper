@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
 [assembly: System.CLSCompliant(false)]
-[assembly: AssemblyVersion("1.0.5.008")]
-[assembly: AssemblyFileVersion("1.0.5.008")]
+[assembly: AssemblyVersion("1.0.5.009")]
+[assembly: AssemblyFileVersion("1.0.5.009")]
 
 [assembly: AssemblyCopyright("Copyright © 2022 Chr_")]
 [assembly: AssemblyProduct("SAS_Dumper")]
