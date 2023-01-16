@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 namespace Chrxw.SAS_Dumper.Storage
 {
     /// <summary>应用配置</summary>
-    internal sealed class Config
+    internal sealed record Config
     {
         [JsonProperty(Required = Required.DisallowNull)]
         internal bool Enabled { get; set; } = false;

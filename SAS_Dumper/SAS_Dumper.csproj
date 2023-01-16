@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<PackageProjectUrl>https://github.com/chr233/SAS_Dumper</PackageProjectUrl>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -19,11 +19,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AngleSharp.XPath" Version="1.1.7" />
-		<PackageReference Include="ConfigureAwaitChecker.Analyzer" PrivateAssets="all" Version="5.0.0" />
-		<PackageReference Include="Newtonsoft.Json" IncludeAssets="compile" Version="13.0.1" />
+		<PackageReference Include="AngleSharp.XPath" Version="2.0.1" />
+		<PackageReference Include="ConfigureAwaitChecker.Analyzer" PrivateAssets="all" Version="5.0.0.1" />
+		<PackageReference Include="Newtonsoft.Json" IncludeAssets="compile" Version="13.0.2" />
 		<PackageReference Include="SteamKit2" IncludeAssets="compile" Version="2.4.1" />
-		<PackageReference Include="System.Composition.AttributedModel" Version="6.0.0" />
+		<PackageReference Include="System.Composition.AttributedModel" Version="7.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -41,11 +41,7 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Exec Command="powershell -Command &quot;&amp;'$(ProjectDir)scripts\Pre-Build.ps1' '$(ProjectDir)'&quot;" />
-	</Target>
-
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="powershell -Command &quot;&amp;'$(ProjectDir)scripts\After-Build.ps1' '$(SolutionDir)' '$(TargetPath)' '$(TargetFileName)' '$(Configuration)'&quot;" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="..\ArchiSteamFarm\ArchiSteamFarm\bin\$(Configuration)\$(TargetFramework)\plugins\" SkipUnchangedFiles="true" />
 	</Target>
 </Project>

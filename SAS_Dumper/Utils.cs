@@ -1,10 +1,8 @@
 ﻿using ArchiSteamFarm.Core;
 using ArchiSteamFarm.NLog;
-using ArchiSteamFarm.Steam.Integration;
 using ArchiSteamFarm.Steam.Interaction;
 using Chrxw.SAS_Dumper.Data;
 using Chrxw.SAS_Dumper.Storage;
-using System;
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Net.Http;
