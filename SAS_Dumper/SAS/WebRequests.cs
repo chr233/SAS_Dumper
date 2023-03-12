@@ -1,15 +1,9 @@
-﻿using Chrxw.SAS_Dumper.Data;
-using Chrxw.SAS_Dumper.Localization;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using SAS_Dumper.Data;
 using System.Net;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
-using static Chrxw.SAS_Dumper.Utils;
 
-namespace Chrxw.SAS_Dumper.SAS
+namespace SAS_Dumper.SAS
 {
     internal static class WebRequests
     {
@@ -23,16 +17,13 @@ namespace Chrxw.SAS_Dumper.SAS
             return response;
         }
 
-        internal static void DoSASFeedback(object _)
+        internal static void DoSASFeedback(object? _)
         {
             if (SASConfig.Enabled)
             {
-                Task.Run(async () => {
-                    await SASFeedback().ConfigureAwait(false);
-                });
+                Task.Run(SASFeedback);
             }
         }
-
 
         internal static async Task SASFeedback()
         {
@@ -42,7 +33,7 @@ namespace Chrxw.SAS_Dumper.SAS
 
             foreach (string name in BotInfoDict.Keys)
             {
-                if (BotInfoDict.TryGetValue(name, out BotInfo binfo))
+                if (BotInfoDict.TryGetValue(name, out BotInfo? binfo))
                 {
                     string steamID = binfo.SteamID.ToString();
                     string token = binfo.AccessToken;
@@ -71,32 +62,40 @@ namespace Chrxw.SAS_Dumper.SAS
 
                 if (success)
                 {
-                    SASResult result = JsonConvert.DeserializeObject<SASResult>(rawResponse);
+                    SASResult? result = JsonConvert.DeserializeObject<SASResult>(rawResponse);
 
-                    int succCount = 0, failCount = 0;
-
-                    foreach (List<string> res in result.Result)
+                    if (result != null)
                     {
-                        if (res.Count == 4)
+
+                        int succCount = 0, failCount = 0;
+
+                        foreach (List<string> res in result.Result)
                         {
-                            string name = res[0];
-                            string state = res[3];
-
-                            if (state != "添加失败")
+                            if (res.Count == 4)
                             {
-                                succCount++;
-                            }
-                            else
-                            {
-                                failCount++;
-                                ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.SASAddBotFailed, name));
-                            }
+                                string name = res[0];
+                                string state = res[3];
 
-                            BotInfoDict.TryRemove(name, out BotInfo _);
+                                if (state != "添加失败")
+                                {
+                                    succCount++;
+                                }
+                                else
+                                {
+                                    failCount++;
+                                    ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.SASAddBotFailed, name));
+                                }
+
+                                BotInfoDict.TryRemove(name, out BotInfo _);
+                            }
                         }
-                    }
 
-                    ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.SASFeedStatus, payload.Count, succCount, failCount));
+                        ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.SASFeedStatus, payload.Count, succCount, failCount));
+                    }
+                    else
+                    {
+                        ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.SASFailed, response.StatusCode, rawResponse));
+                    }
                 }
                 else
                 {

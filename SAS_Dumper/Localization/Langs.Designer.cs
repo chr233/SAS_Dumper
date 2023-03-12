@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Chrxw.SAS_Dumper.Localization {
+namespace SAS_Dumper.Localization {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Chrxw.SAS_Dumper.Localization {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Chrxw.SAS_Dumper.Localization.Langs", typeof(Langs).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SAS_Dumper.Localization.Langs", typeof(Langs).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

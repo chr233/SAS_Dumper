@@ -1,8 +1,4 @@
-using Chrxw.SAS_Dumper.Localization;
-using System;
-using static Chrxw.SAS_Dumper.Utils;
-
-namespace Chrxw.SAS_Dumper.Other
+namespace SAS_Dumper.Other
 {
     internal static class Command
     {
@@ -12,7 +8,7 @@ namespace Chrxw.SAS_Dumper.Other
         /// <returns></returns>
         internal static string ResponseSASDumperVersion()
         {
-            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version ?? new("0.0.0.0");
 
             return string.Format(CurrentCulture, Langs.PluginVer, nameof(SAS_Dumper), version.Major, version.Minor, version.Build, version.Revision);
         }

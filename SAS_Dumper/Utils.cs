@@ -1,13 +1,12 @@
 ﻿using ArchiSteamFarm.Core;
 using ArchiSteamFarm.NLog;
 using ArchiSteamFarm.Steam.Interaction;
-using Chrxw.SAS_Dumper.Data;
-using Chrxw.SAS_Dumper.Storage;
+using SAS_Dumper.Data;
+using SAS_Dumper.Storage;
 using System.Collections.Concurrent;
 using System.Globalization;
-using System.Net.Http;
 
-namespace Chrxw.SAS_Dumper
+namespace SAS_Dumper
 {
     internal static class Utils
     {
@@ -29,7 +28,7 @@ namespace Chrxw.SAS_Dumper
         /// <summary>
         /// 配置文件
         /// </summary>
-        internal static Config SASConfig { get; set; } = null;
+        internal static Config SASConfig { get; set; } = new();
 
         /// <summary>
         /// 日志

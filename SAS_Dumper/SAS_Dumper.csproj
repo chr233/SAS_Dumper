@@ -1,13 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
-		<TargetFramework>net7.0</TargetFramework>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<PackageProjectUrl>https://github.com/chr233/SAS_Dumper</PackageProjectUrl>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<PackageLicenseExpression>AGPLv3</PackageLicenseExpression>
-		<AppDesignerFolder>Localization</AppDesignerFolder>
-		<RootNamespace>Chrxw.SAS_Dumper</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -15,15 +8,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ArchiSteamFarm\ArchiSteamFarm\ArchiSteamFarm.csproj" ExcludeAssets="all" Private="false" />
+		<ProjectReference Include="..\ArchiSteamFarm\ArchiSteamFarm\ArchiSteamFarm.csproj"
+			ExcludeAssets="all" Private="false" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AngleSharp.XPath" Version="2.0.1" />
-		<PackageReference Include="ConfigureAwaitChecker.Analyzer" PrivateAssets="all" Version="5.0.0.1" />
-		<PackageReference Include="Newtonsoft.Json" IncludeAssets="compile" Version="13.0.2" />
-		<PackageReference Include="SteamKit2" IncludeAssets="compile" Version="2.4.1" />
-		<PackageReference Include="System.Composition.AttributedModel" Version="7.0.0" />
+		<PackageReference Include="AngleSharp.XPath" />
+		<PackageReference Include="ConfigureAwaitChecker.Analyzer" PrivateAssets="all" />
+		<PackageReference Include="Newtonsoft.Json" IncludeAssets="compile" />
+		<PackageReference Include="SteamKit2" IncludeAssets="compile" />
+		<PackageReference Include="System.Composition.AttributedModel" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -41,7 +35,16 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+		<Using Include="SAS_Dumper.Localization" />
+		<Using Include="SAS_Dumper.Utils">
+			<Static>True</Static>
+		</Using>
+	</ItemGroup>
+
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Copy SourceFiles="$(TargetPath)" DestinationFolder="..\ArchiSteamFarm\ArchiSteamFarm\bin\$(Configuration)\$(TargetFramework)\plugins\" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="$(TargetPath)"
+			DestinationFolder="..\ArchiSteamFarm\ArchiSteamFarm\bin\$(Configuration)\$(TargetFramework)\plugins\"
+			SkipUnchangedFiles="true" />
 	</Target>
 </Project>

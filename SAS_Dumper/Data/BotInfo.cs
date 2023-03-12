@@ -1,4 +1,4 @@
-﻿namespace Chrxw.SAS_Dumper.Data
+﻿namespace SAS_Dumper.Data
 {
     internal sealed class BotInfo
     {

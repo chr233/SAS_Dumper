@@ -1,11 +1,6 @@
 using ArchiSteamFarm.Steam;
-using Chrxw.SAS_Dumper.Localization;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using static Chrxw.SAS_Dumper.Utils;
-namespace Chrxw.SAS_Dumper.SAS
+namespace SAS_Dumper.SAS
 {
     internal static class Command
     {
@@ -36,8 +31,8 @@ namespace Chrxw.SAS_Dumper.SAS
             {
                 if (bot.IsConnectedAndLoggedOn)
                 {
-                    (bool success, string? accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
-                    if (success)
+                    var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
+                    if (!string.IsNullOrEmpty(accessToken))
                     {
                         BotInfoDict.TryAdd(bot.BotName, new(bot.SteamID, accessToken));
                     }

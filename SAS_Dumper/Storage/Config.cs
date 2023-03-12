@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Chrxw.SAS_Dumper.Storage
+namespace SAS_Dumper.Storage
 {
     /// <summary>应用配置</summary>
     internal sealed record Config

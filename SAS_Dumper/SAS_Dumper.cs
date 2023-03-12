@@ -1,18 +1,12 @@
 ﻿using ArchiSteamFarm.Plugins.Interfaces;
 using ArchiSteamFarm.Steam;
-using Chrxw.SAS_Dumper.Localization;
-using Chrxw.SAS_Dumper.Storage;
 using Newtonsoft.Json.Linq;
+using SAS_Dumper.Storage;
 using SteamKit2;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Composition;
-using System.Threading;
-using System.Threading.Tasks;
-using static Chrxw.SAS_Dumper.Utils;
 
-namespace Chrxw.SAS_Dumper
+namespace SAS_Dumper
 {
     [Export(typeof(IPlugin))]
     internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection
@@ -29,7 +23,7 @@ namespace Chrxw.SAS_Dumper
         /// </summary>
         /// <param name="additionalConfigProperties"></param>
         /// <returns></returns>
-        public Task OnASFInit(IReadOnlyDictionary<string, JToken> additionalConfigProperties = null)
+        public Task OnASFInit(IReadOnlyDictionary<string, JToken>? additionalConfigProperties = null)
         {
             Config? config = null;
 
@@ -95,7 +89,7 @@ namespace Chrxw.SAS_Dumper
         /// <returns></returns>
         /// <exception cref="InvalidEnumArgumentException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task<string> OnBotCommand(Bot bot, EAccess access, string message, string[] args, ulong steamID = 0)
+        public async Task<string?> OnBotCommand(Bot bot, EAccess access, string message, string[] args, ulong steamID = 0)
         {
             if (!Enum.IsDefined(access))
             {
@@ -146,8 +140,8 @@ namespace Chrxw.SAS_Dumper
         {
             if (SASConfig.Enabled)
             {
-                (bool success, string? accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
-                if (success)
+              var  (_,  accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
+                if (!string.IsNullOrEmpty(accessToken))
                 {
                     BotInfoDict.TryAdd(bot.BotName, new(bot.SteamID, accessToken));
                 }

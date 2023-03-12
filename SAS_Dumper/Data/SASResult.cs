@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System.Collections.Generic;
 
-namespace Chrxw.SAS_Dumper.Data
+namespace SAS_Dumper.Data
 {
     internal sealed class SASResult
     {
@@ -9,9 +8,9 @@ namespace Chrxw.SAS_Dumper.Data
         internal int Code { get; set; }
 
         [JsonProperty(PropertyName = "msg")]
-        internal string Message { get; set; }
+        internal string Message { get; set; } = "";
 
         [JsonProperty(PropertyName = "result")]
-        internal List<List<string>> Result { get; set; }
+        internal List<List<string>> Result { get; set; } = new();
     }
 }
