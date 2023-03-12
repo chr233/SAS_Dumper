@@ -16,7 +16,7 @@ namespace SAS_Dumper
 
         private bool PluginEnabled { get; set; } = false;
 
-        internal Timer TaskTimer { get; private set; } = null!;
+        private Timer? FeedBackTimer { get; set; }
 
         /// <summary>
         /// ASF启动事件
@@ -51,7 +51,15 @@ namespace SAS_Dumper
             {
                 Http.BaseAddress = new(config.SASUrl);
                 Http.DefaultRequestHeaders.Add("auth", config.SASPasswd);
-                TaskTimer = new(SAS.WebRequests.DoSASFeedback, null, TimeSpan.Zero, TimeSpan.FromSeconds(config.FeedbackPeriod));
+                FeedBackTimer = new Timer(
+                    async (_) =>
+                    {
+                        ASFLogger.LogGenericInfo("timer");
+                        await SAS.WebRequests.SASFeedback().ConfigureAwait(false);
+                    }, null,
+                    TimeSpan.Zero,
+                    TimeSpan.FromSeconds(config.FeedbackPeriod)
+                );
             }
             else
             {
@@ -140,7 +148,7 @@ namespace SAS_Dumper
         {
             if (SASConfig.Enabled)
             {
-              var  (_,  accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
+                var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
                 if (!string.IsNullOrEmpty(accessToken))
                 {
                     BotInfoDict.TryAdd(bot.BotName, new(bot.SteamID, accessToken));

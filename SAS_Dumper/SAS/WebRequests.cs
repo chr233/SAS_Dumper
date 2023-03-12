@@ -7,7 +7,6 @@ namespace SAS_Dumper.SAS
 {
     internal static class WebRequests
     {
-
         internal static async Task<HttpResponseMessage> TestSAS()
         {
             HttpRequestMessage request = new(HttpMethod.Get, "/adv/bots/");
@@ -17,16 +16,13 @@ namespace SAS_Dumper.SAS
             return response;
         }
 
-        internal static void DoSASFeedback(object? _)
-        {
-            if (SASConfig.Enabled)
-            {
-                Task.Run(SASFeedback);
-            }
-        }
-
         internal static async Task SASFeedback()
         {
+            if (!SASConfig.Enabled)
+            {
+                return;
+            }
+
             HashSet<Dictionary<string, string>> payload = new();
 
             HashSet<string> botNames = new();
