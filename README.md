@@ -1,6 +1,6 @@
 # SAS_Dumper
 
-[![AutoBuild][workflow_b]][workflow] [![release][release_b]][release] [![Download][download_b]][release] [![License][license_b]][license]
+![AutoBuild][workflow_b] [![release][release_b]][release] [![Download][download_b]][release] [![License][license_b]][license]
 
 ## 命令列表
 
@@ -31,8 +31,7 @@ ASF.json
 
 [Releases](https://github.com/chr233/SAS_Dumper/releases)
 
-[workflow_b]: https://github.com/chr233/SAS_Dumper/actions/workflows/dotnet.yml/badge.svg
-[workflow]: https://github.com/chr233/SAS_Dumper/actions/workflows/dotnet.yml
+[workflow_b]: https://img.shields.io/github/actions/workflow/status/chr233/ASFEnhance/autobuild.yml?logo=github
 [download_b]: https://img.shields.io/github/downloads/chr233/SAS_Dumper/total
 [release]: https://github.com/chr233/SAS_Dumper/releases
 [release_b]: https://img.shields.io/github/v/release/chr233/SAS_Dumper
