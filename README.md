@@ -31,7 +31,7 @@ ASF.json
 
 [Releases](https://github.com/chr233/SAS_Dumper/releases)
 
-[workflow_b]: https://img.shields.io/github/actions/workflow/status/chr233/ASFEnhance/autobuild.yml?logo=github
+[workflow_b]: https://img.shields.io/github/actions/workflow/status/chr233/SAS_Dumper/autobuild.yml?logo=github
 [download_b]: https://img.shields.io/github/downloads/chr233/SAS_Dumper/total
 [release]: https://github.com/chr233/SAS_Dumper/releases
 [release_b]: https://img.shields.io/github/v/release/chr233/SAS_Dumper
