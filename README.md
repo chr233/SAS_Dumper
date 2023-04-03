@@ -6,7 +6,7 @@
 
 | 插件版本                                                             | 兼容 ASF 版本 |
 | -------------------------------------------------------------------- | :-----------: |
-| [1.0.9.0](https://github.com/chr233/SAS_Dumper/releases/tag/1.0.9.0) |    5.4.4.3    |
+| [1.0.9.0](https://github.com/chr233/SAS_Dumper/releases/tag/1.0.9.0) |    5.4.3.2    |
 | [1.0.8.1](https://github.com/chr233/SAS_Dumper/releases/tag/1.0.8.1) |   5.4.2.13    |
 
 ## 命令列表
