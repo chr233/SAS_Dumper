@@ -2,6 +2,12 @@
 
 ![AutoBuild][workflow_b] [![release][release_b]][release] [![Download][download_b]][release] [![License][license_b]][license]
 
+## 适配说明
+
+| 插件版本                                                             | 兼容 ASF 版本 |
+| -------------------------------------------------------------------- | :-----------: |
+| [1.0.8.1](https://github.com/chr233/SAS_Dumper/releases/tag/1.0.8.1) |   5.4.2.13    |
+
 ## 命令列表
 
 | 命令        | 缩写   | 权限     | 说明                    |
