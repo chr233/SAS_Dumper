@@ -168,6 +168,7 @@ namespace SAS_Dumper
         /// <returns></returns>
         public Task OnBotDisconnected(Bot bot, EResult reason)
         {
+            BotInfoDict.Keys.Remove(bot.BotName);
             return Task.CompletedTask;
         }
     }
