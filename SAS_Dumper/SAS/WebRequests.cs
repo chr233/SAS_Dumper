@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SAS_Dumper.Data;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Text;
 
@@ -7,6 +8,10 @@ namespace SAS_Dumper.SAS
 {
     internal static class WebRequests
     {
+        /// <summary>
+        /// 测试后端
+        /// </summary>
+        /// <returns></returns>
         internal static async Task<HttpResponseMessage> TestSAS()
         {
             HttpRequestMessage request = new(HttpMethod.Get, "/adv/bots/");
@@ -16,7 +21,12 @@ namespace SAS_Dumper.SAS
             return response;
         }
 
-        internal static async Task SASFeedback(IDictionary<string, BotInfo?> botTokens)
+        /// <summary>
+        /// 上传账号信息
+        /// </summary>
+        /// <param name="botTokens"></param>
+        /// <returns></returns>
+        internal static async Task SASFeedback(IDictionary<string, BotInfo> botTokens)
         {
             if (!SASConfig.Enabled)
             {
@@ -25,21 +35,15 @@ namespace SAS_Dumper.SAS
 
             HashSet<Dictionary<string, string>> payload = new();
 
-            HashSet<string> botNames = new();
-
-            foreach (string name in BotInfoDict.Keys)
+            foreach(var (name,botInfo) in botTokens)
             {
-                if (BotInfoDict.TryGetValue(name, out BotInfo? binfo))
-                {
-                    string steamID = binfo.SteamID.ToString();
-                    string token = binfo.AccessToken;
-                    payload.Add(new(3, StringComparer.Ordinal) {
+                string steamID = botInfo.SteamID.ToString();
+                string token = botInfo.AccessToken;
+                payload.Add(new(3, StringComparer.Ordinal) {
                         { "steam_id", steamID },
                         { "access_token", token },
                         { "desc", name }
                     });
-                    botNames.Add(name);
-                };
             }
 
             if (payload.Count > 0)
@@ -62,7 +66,6 @@ namespace SAS_Dumper.SAS
 
                     if (result != null)
                     {
-
                         int succCount = 0, failCount = 0;
 
                         foreach (List<string> res in result.Result)
@@ -81,8 +84,6 @@ namespace SAS_Dumper.SAS
                                     failCount++;
                                     ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.SASAddBotFailed, name));
                                 }
-
-                                BotInfoDict.TryRemove(name, out BotInfo _);
                             }
                         }
 

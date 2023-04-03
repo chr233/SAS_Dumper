@@ -43,6 +43,6 @@ namespace SAS_Dumper
         /// <summary>
         /// 机器人信息
         /// </summary>
-        internal static ConcurrentDictionary<string, BotInfo> BotInfoDict { get; } = new();
+        //internal static ConcurrentDictionary<string, BotInfo> BotInfoDict { get; } = new();
     }
 }

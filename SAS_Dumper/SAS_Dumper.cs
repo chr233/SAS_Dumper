@@ -5,6 +5,8 @@ using SAS_Dumper.Storage;
 using SteamKit2;
 using System.ComponentModel;
 using System.Composition;
+using System.Collections.Concurrent;
+using SAS_Dumper.Data;
 
 namespace SAS_Dumper
 {
@@ -17,6 +19,8 @@ namespace SAS_Dumper
         private bool OnlineMode { get; set; }
 
         private Timer? FeedBackTimer { get; set; }
+
+        private ConcurrentDictionary<string, BotInfo> BotTokenCache { get; } = new();
 
         /// <summary>
         /// ASF启动事件
@@ -55,7 +59,7 @@ namespace SAS_Dumper
                     async (_) => {
                         if (SASConfig.Enabled)
                         {
-                            await SAS.WebRequests.SASFeedback().ConfigureAwait(false);
+                            await SAS.WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
                         }
                     }, null,
                     TimeSpan.Zero,
@@ -114,7 +118,6 @@ namespace SAS_Dumper
                     {
                         //Other
                         case "SASDUMPER" when access >= EAccess.Master:
-                        case "SASD" when access >= EAccess.Master:
                             return Other.Command.ResponseSASDumperVersion();
 
                         //SAS
@@ -128,7 +131,7 @@ namespace SAS_Dumper
                             return SAS.Command.ResponseSASController(false);
 
                         case "SASMANUAL" when OnlineMode && access >= EAccess.Master:
-                            return await SAS.Command.ResponseSASManualFeedbackAsync().ConfigureAwait(false);
+                            return await SAS.Command.ResponseSASManualFeedback().ConfigureAwait(false);
 
                         case "SAS" when access >= EAccess.Master:
 
@@ -155,7 +158,10 @@ namespace SAS_Dumper
                 var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
                 if (!string.IsNullOrEmpty(accessToken))
                 {
-                    BotInfoDict.TryAdd(bot.BotName, new(bot.SteamID, accessToken));
+                    BotTokenCache.TryAdd(
+                        bot.BotName,
+                        new BotInfo { SteamID=bot.SteamID, AccessToken=accessToken, }
+                 );
                 }
                 else
                 {
