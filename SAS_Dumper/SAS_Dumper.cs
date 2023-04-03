@@ -14,7 +14,7 @@ namespace SAS_Dumper
         public string Name => nameof(SAS_Dumper);
         public Version Version => typeof(SAS_Dumper).Assembly.GetName().Version ?? throw new ArgumentNullException(nameof(Version));
 
-        private bool PluginEnabled { get; set; } = false;
+        private bool OnlineMode { get; set; }
 
         private Timer? FeedBackTimer { get; set; }
 
@@ -52,25 +52,26 @@ namespace SAS_Dumper
                 Http.BaseAddress = new(config.SASUrl);
                 Http.DefaultRequestHeaders.Add("auth", config.SASPasswd);
                 FeedBackTimer = new Timer(
-                    async (_) =>
-                    {
-                        ASFLogger.LogGenericInfo("timer");
-                        await SAS.WebRequests.SASFeedback().ConfigureAwait(false);
+                    async (_) => {
+                        if (SASConfig.Enabled)
+                        {
+                            await SAS.WebRequests.SASFeedback().ConfigureAwait(false);
+                        }
                     }, null,
                     TimeSpan.Zero,
                     TimeSpan.FromSeconds(config.FeedbackPeriod)
                 );
+
+                ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
+
+                OnlineMode=true;
             }
             else
             {
-                ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.ReadConfigError));
+                ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.ReadConfigError));
             }
 
-            PluginEnabled = config != null;
-
             SASConfig = config ?? new();
-
-            ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
 
             return Task.CompletedTask;
         }
@@ -117,17 +118,20 @@ namespace SAS_Dumper
                             return Other.Command.ResponseSASDumperVersion();
 
                         //SAS
-                        case "SASTEST" when PluginEnabled && access >= EAccess.Master:
+                        case "SASTEST" when OnlineMode && access >= EAccess.Master:
                             return await SAS.Command.ResponseSASTest().ConfigureAwait(false);
 
-                        case "SASON" when PluginEnabled && access >= EAccess.Master:
+                        case "SASON" when OnlineMode && access >= EAccess.Master:
                             return SAS.Command.ResponseSASController(true);
 
-                        case "SASTOFF" when PluginEnabled && access >= EAccess.Master:
+                        case "SASTOFF" when OnlineMode && access >= EAccess.Master:
                             return SAS.Command.ResponseSASController(false);
 
-                        case "SASMANUAL" when PluginEnabled && access >= EAccess.Master:
+                        case "SASMANUAL" when OnlineMode && access >= EAccess.Master:
                             return await SAS.Command.ResponseSASManualFeedbackAsync().ConfigureAwait(false);
+
+                        case "SAS" when access >= EAccess.Master:
+
 
                         default:
                             return null;

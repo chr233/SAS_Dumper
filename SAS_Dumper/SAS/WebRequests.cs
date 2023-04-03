@@ -16,7 +16,7 @@ namespace SAS_Dumper.SAS
             return response;
         }
 
-        internal static async Task SASFeedback()
+        internal static async Task SASFeedback(IDictionary<string, BotInfo?> botTokens)
         {
             if (!SASConfig.Enabled)
             {
