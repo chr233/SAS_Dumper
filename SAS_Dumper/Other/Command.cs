@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace SAS_Dumper.Other
 {
     internal static class Command
@@ -10,7 +12,12 @@ namespace SAS_Dumper.Other
         {
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version ?? new("0.0.0.0");
 
-            return string.Format(CurrentCulture, Langs.PluginVer, nameof(SAS_Dumper), version.Major, version.Minor, version.Build, version.Revision);
+            StringBuilder sb = new();
+            sb.AppendLine(string.Format(CurrentCulture, Langs.PluginVer, nameof(SAS_Dumper), version.Major, version.Minor, version.Build, version.Revision));
+
+            sb.AppendLine("插件更新");
+
+            return sb.ToString();
         }
     }
 }
