@@ -12,7 +12,7 @@ using System.Composition;
 namespace SAS_Dumper
 {
     [Export(typeof(IPlugin))]
-    internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection
+    internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
     {
         public string Name => nameof(SAS_Dumper);
         public Version Version => typeof(SAS_Dumper).Assembly.GetName().Version ?? throw new ArgumentNullException(nameof(Version));
@@ -187,8 +187,30 @@ namespace SAS_Dumper
         /// <returns></returns>
         public Task OnBotDisconnected(Bot bot, EResult reason)
         {
-            BotTokenCache.Keys.Remove(bot.BotName);
+
             return Task.CompletedTask;
         }
+
+        /// <summary>
+        /// Bot初始化
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <returns></returns>
+        public Task OnBotInit(Bot bot)
+        {
+            return Task.CompletedTask;
+        }
+        
+        /// <summary>
+        /// Bot删除
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <returns></returns>
+        public Task OnBotDestroy(Bot bot)
+        {
+            BotTokenCache.Remove(bot.BotName, out _);
+            return Task.CompletedTask;
+        }
+
     }
 }
