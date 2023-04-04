@@ -6,19 +6,22 @@
 
 | 插件版本                                                               | 兼容 ASF 版本 |
 | ---------------------------------------------------------------------- | :-----------: |
-| [1.0.10.0](https://github.com/chr233/SAS_Dumper/releases/tag/1.0.10.0) |    5.4.3.2    |
+| [1.0.11.0](https://github.com/chr233/SAS_Dumper/releases/tag/1.0.11.0) |    5.4.4.4    |
+| [1.0.10.0](https://github.com/chr233/SAS_Dumper/releases/tag/1.0.10.0) |    5.4.4.4    |
 | [1.0.9.0](https://github.com/chr233/SAS_Dumper/releases/tag/1.0.9.0)   |    5.4.3.2    |
 | [1.0.8.1](https://github.com/chr233/SAS_Dumper/releases/tag/1.0.8.1)   |   5.4.2.13    |
 
 ## 命令列表
 
-| 命令        | 缩写   | 权限     | 说明                    |
-| ----------- | ------ | -------- | ----------------------- |
-| `SASDUMPER` | `SASD` | `Master` | 查看插件版本            |
-| `SASTEST`   | -      | `Master` | 测试与 SAS 后台能否连接 |
-| `SASON`     | -      | `Master` | 启用自动汇报            |
-| `SASTOFF`   | -      | `Master` | 禁用自动汇报            |
-| `SASMANUAL` | -      | `Master` | 手动汇报所有在线机器人  |
+| 命令        | 缩写 | 权限     | 说明                    |
+| ----------- | ---- | -------- | ----------------------- |
+| `SAS`       | -    | `Master` | 导出 Token 到文件       |
+| `SASDUMPER` | -    | `Master` | 查看插件版本            |
+| `SASTEST`   | -    | `Master` | 测试与 SAS 后台能否连接 |
+| `SASON`     | -    | `Master` | 启用自动汇报            |
+| `SASTOFF`   | -    | `Master` | 禁用自动汇报            |
+| `SASFRESH`  | -    | `Master` | 强制刷新 Token 缓存     |
+| `SASMANUAL` | -    | `Master` | 手动汇报所有在线机器人  |
 
 ## 配置说明
 
