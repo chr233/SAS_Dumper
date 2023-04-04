@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SAS_Dumper.Data;
-using System.Collections.Concurrent;
 using System.Net;
 using System.Text;
 
@@ -35,7 +34,7 @@ namespace SAS_Dumper.SAS
 
             HashSet<Dictionary<string, string>> payload = new();
 
-            foreach(var (name,botInfo) in botTokens)
+            foreach (var (name, botInfo) in botTokens)
             {
                 string steamID = botInfo.SteamID.ToString();
                 string token = botInfo.AccessToken;
@@ -82,21 +81,21 @@ namespace SAS_Dumper.SAS
                                 else
                                 {
                                     failCount++;
-                                    ASFLogger.LogGenericWarning(string.Format( Langs.SASAddBotFailed, name));
+                                    ASFLogger.LogGenericWarning(string.Format(Langs.SASAddBotFailed, name));
                                 }
                             }
                         }
 
-                        ASFLogger.LogGenericInfo(string.Format( Langs.SASFeedStatus, payload.Count, succCount, failCount));
+                        ASFLogger.LogGenericInfo(string.Format(Langs.SASFeedStatus, payload.Count, succCount, failCount));
                     }
                     else
                     {
-                        ASFLogger.LogGenericWarning(string.Format( Langs.SASFailed, response.StatusCode, rawResponse));
+                        ASFLogger.LogGenericWarning(string.Format(Langs.SASFailed, response.StatusCode, rawResponse));
                     }
                 }
                 else
                 {
-                    ASFLogger.LogGenericWarning(string.Format( Langs.SASFailed, response.StatusCode, rawResponse));
+                    ASFLogger.LogGenericWarning(string.Format(Langs.SASFailed, response.StatusCode, rawResponse));
                 }
             }
         }

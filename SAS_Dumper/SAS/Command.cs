@@ -1,12 +1,8 @@
-using ArchiSteamFarm.Core;
 using ArchiSteamFarm.Steam;
 using Newtonsoft.Json;
 using SAS_Dumper.Data;
-using SteamKit2.Internal;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -22,7 +18,7 @@ namespace SAS_Dumper.SAS
         {
             HttpResponseMessage response = await WebRequests.TestSAS().ConfigureAwait(false);
 
-            return FormatStaticResponse(string.Format( Langs.SASTest, response.StatusCode == HttpStatusCode.OK ? Langs.Success : Langs.Failure));
+            return FormatStaticResponse(string.Format(Langs.SASTest, response.StatusCode == HttpStatusCode.OK ? Langs.Success : Langs.Failure));
         }
 
         /// <summary>
@@ -34,7 +30,7 @@ namespace SAS_Dumper.SAS
         {
             SASConfig.Enabled = enable;
 
-            return FormatStaticResponse(string.Format( Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
+            return FormatStaticResponse(string.Format(Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
         }
 
         /// <summary>
@@ -49,7 +45,7 @@ namespace SAS_Dumper.SAS
 
             if (bots == null || !bots.Any())
             {
-                return FormatStaticResponse(string.Format( Langs.NoBotsAvilable));
+                return FormatStaticResponse(string.Format(Langs.NoBotsAvilable));
             }
 
             foreach (var bot in bots.Where(x => x.IsConnectedAndLoggedOn))
@@ -64,7 +60,7 @@ namespace SAS_Dumper.SAS
                 }
             }
 
-            return FormatStaticResponse(string.Format( Langs.SASManual, botTokens.Count));
+            return FormatStaticResponse(string.Format(Langs.SASManual, botTokens.Count));
         }
 
 
@@ -79,7 +75,7 @@ namespace SAS_Dumper.SAS
                 await WebRequests.SASFeedback(botTokens).ConfigureAwait(false);
             }
 
-            return FormatStaticResponse(string.Format( Langs.SASManual, botTokens.Count));
+            return FormatStaticResponse(string.Format(Langs.SASManual, botTokens.Count));
         }
 
         /// <summary>
@@ -92,7 +88,7 @@ namespace SAS_Dumper.SAS
 
             if (bots == null || !bots.Any())
             {
-                return FormatStaticResponse(string.Format( Langs.NoBotsAvilable));
+                return FormatStaticResponse(string.Format(Langs.NoBotsAvilable));
             }
 
             if (!string.IsNullOrEmpty(desc))
@@ -159,7 +155,7 @@ namespace SAS_Dumper.SAS
             }
             else
             {
-                return FormatStaticResponse(string.Format( Langs.NoBotsAvilable));
+                return FormatStaticResponse(string.Format(Langs.NoBotsAvilable));
             }
         }
     }

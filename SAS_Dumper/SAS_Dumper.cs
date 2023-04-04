@@ -1,13 +1,13 @@
-﻿using ArchiSteamFarm.Plugins.Interfaces;
+﻿using ArchiSteamFarm.Core;
+using ArchiSteamFarm.Plugins.Interfaces;
 using ArchiSteamFarm.Steam;
 using Newtonsoft.Json.Linq;
+using SAS_Dumper.Data;
 using SAS_Dumper.Storage;
 using SteamKit2;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Composition;
-using System.Collections.Concurrent;
-using SAS_Dumper.Data;
-using ArchiSteamFarm.Core;
 
 namespace SAS_Dumper
 {
@@ -22,7 +22,7 @@ namespace SAS_Dumper
         private Timer? FeedBackTimer { get; set; }
 
         private ConcurrentDictionary<string, BotInfo> BotTokenCache { get; } = new();
-        
+
         /// <summary>
         /// ASF启动事件
         /// </summary>
@@ -47,7 +47,7 @@ namespace SAS_Dumper
                     catch (Exception e)
                     {
                         ASFLogger.LogGenericException(e);
-                        ASFLogger.LogGenericWarning(string.Format( Langs.ReadConfigError));
+                        ASFLogger.LogGenericWarning(string.Format(Langs.ReadConfigError));
                     }
                 }
             }
@@ -67,13 +67,13 @@ namespace SAS_Dumper
                     TimeSpan.FromSeconds(config.FeedbackPeriod)
                 );
 
-                ASFLogger.LogGenericInfo(string.Format( Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
+                ASFLogger.LogGenericInfo(string.Format(Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
 
                 OnlineMode=true;
             }
             else
             {
-                ASFLogger.LogGenericInfo(string.Format( Langs.ReadConfigError));
+                ASFLogger.LogGenericInfo(string.Format(Langs.ReadConfigError));
             }
 
             SASConfig = config ?? new();
@@ -87,9 +87,9 @@ namespace SAS_Dumper
         /// <returns></returns>
         public Task OnLoaded()
         {
-            ASFLogger.LogGenericInfo(string.Format( Langs.PluginVer, nameof(SAS_Dumper), Version.Major, Version.Minor, Version.Build, Version.Revision));
-            ASFLogger.LogGenericInfo(string.Format( Langs.PluginContact));
-
+            ASFLogger.LogGenericInfo(string.Format(Langs.PluginVer, nameof(SAS_Dumper), Version.Major, Version.Minor, Version.Build, Version.Revision));
+            ASFLogger.LogGenericInfo(string.Format(Langs.PluginContact));
+            Misc.Handler.Init();
             return Task.CompletedTask;
         }
 
@@ -170,12 +170,13 @@ namespace SAS_Dumper
                 BotTokenCache.TryAdd(
                     bot.BotName,
                     new BotInfo { SteamID=bot.SteamID, AccessToken=accessToken, }
-             );
+                );
             }
             else
             {
-                ASFLogger.LogGenericWarning(string.Format( Langs.FetchTokenFailure, bot.BotName));
+                ASFLogger.LogGenericWarning(string.Format(Langs.FetchTokenFailure, bot.BotName));
             }
+            _ = Task.Run(async () => await Misc.Handler.OnBotLoggedOn(bot).ConfigureAwait(false));
         }
 
         /// <summary>

@@ -12,14 +12,14 @@ namespace SAS_Dumper.Misc
         /// <param name="clanId"></param>
         /// <param name="isFollow"></param>
         /// <returns></returns>
-        internal static async Task FollowCurator(Bot bot, string clanId, bool isFollow)
+        internal static async Task FollowCurator(Bot bot, string clanId)
         {
             Uri request = new(SteamStoreURL, "/curators/ajaxfollow");
             Uri referer = new(SteamStoreURL, $"curator/{clanId}");
 
             Dictionary<string, string> data = new(3) {
                 { "clanid", clanId },
-                { "follow", isFollow ? "1" : "0" },
+                { "follow",  "1" },
             };
 
             await bot.ArchiWebHandler.UrlPostWithSession(request, data: data, referer: referer).ConfigureAwait(false);
