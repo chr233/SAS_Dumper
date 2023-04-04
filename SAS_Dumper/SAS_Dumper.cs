@@ -22,7 +22,7 @@ namespace SAS_Dumper
         private Timer? FeedBackTimer { get; set; }
 
         private ConcurrentDictionary<string, BotInfo> BotTokenCache { get; } = new();
-
+        
         /// <summary>
         /// ASF启动事件
         /// </summary>
@@ -47,7 +47,7 @@ namespace SAS_Dumper
                     catch (Exception e)
                     {
                         ASFLogger.LogGenericException(e);
-                        ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.ReadConfigError));
+                        ASFLogger.LogGenericWarning(string.Format( Langs.ReadConfigError));
                     }
                 }
             }
@@ -67,13 +67,13 @@ namespace SAS_Dumper
                     TimeSpan.FromSeconds(config.FeedbackPeriod)
                 );
 
-                ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
+                ASFLogger.LogGenericInfo(string.Format( Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
 
                 OnlineMode=true;
             }
             else
             {
-                ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.ReadConfigError));
+                ASFLogger.LogGenericInfo(string.Format( Langs.ReadConfigError));
             }
 
             SASConfig = config ?? new();
@@ -87,8 +87,8 @@ namespace SAS_Dumper
         /// <returns></returns>
         public Task OnLoaded()
         {
-            ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.PluginVer, nameof(SAS_Dumper), Version.Major, Version.Minor, Version.Build, Version.Revision));
-            ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.PluginContact));
+            ASFLogger.LogGenericInfo(string.Format( Langs.PluginVer, nameof(SAS_Dumper), Version.Major, Version.Minor, Version.Build, Version.Revision));
+            ASFLogger.LogGenericInfo(string.Format( Langs.PluginContact));
 
             return Task.CompletedTask;
         }
@@ -174,7 +174,7 @@ namespace SAS_Dumper
             }
             else
             {
-                ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.FetchTokenFailure, bot.BotName));
+                ASFLogger.LogGenericWarning(string.Format( Langs.FetchTokenFailure, bot.BotName));
             }
         }
 

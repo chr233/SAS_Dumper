@@ -1,10 +1,8 @@
 ﻿using ArchiSteamFarm.Core;
 using ArchiSteamFarm.NLog;
+using ArchiSteamFarm.Steam.Integration;
 using ArchiSteamFarm.Steam.Interaction;
-using SAS_Dumper.Data;
 using SAS_Dumper.Storage;
-using System.Collections.Concurrent;
-using System.Globalization;
 
 namespace SAS_Dumper
 {
@@ -19,11 +17,6 @@ namespace SAS_Dumper
         {
             return Commands.FormatStaticResponse(response);
         }
-
-        /// <summary>
-        /// 当前语言代码
-        /// </summary>
-        internal static CultureInfo CurrentCulture => CultureInfo.CurrentCulture;
 
         /// <summary>
         /// 配置文件
@@ -41,8 +34,13 @@ namespace SAS_Dumper
         internal static HttpClient Http { get; } = new();
 
         /// <summary>
-        /// 机器人信息
+        /// Steam商店链接
         /// </summary>
-        //internal static ConcurrentDictionary<string, BotInfo> BotInfoDict { get; } = new();
+        internal static Uri SteamStoreURL => ArchiWebHandler.SteamStoreURL;
+
+        /// <summary>
+        /// Steam社区链接
+        /// </summary>
+        internal static Uri SteamCommunityURL = ArchiWebHandler.SteamCommunityURL;
     }
 }

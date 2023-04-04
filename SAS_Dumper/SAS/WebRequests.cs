@@ -82,21 +82,21 @@ namespace SAS_Dumper.SAS
                                 else
                                 {
                                     failCount++;
-                                    ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.SASAddBotFailed, name));
+                                    ASFLogger.LogGenericWarning(string.Format( Langs.SASAddBotFailed, name));
                                 }
                             }
                         }
 
-                        ASFLogger.LogGenericInfo(string.Format(CurrentCulture, Langs.SASFeedStatus, payload.Count, succCount, failCount));
+                        ASFLogger.LogGenericInfo(string.Format( Langs.SASFeedStatus, payload.Count, succCount, failCount));
                     }
                     else
                     {
-                        ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.SASFailed, response.StatusCode, rawResponse));
+                        ASFLogger.LogGenericWarning(string.Format( Langs.SASFailed, response.StatusCode, rawResponse));
                     }
                 }
                 else
                 {
-                    ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.SASFailed, response.StatusCode, rawResponse));
+                    ASFLogger.LogGenericWarning(string.Format( Langs.SASFailed, response.StatusCode, rawResponse));
                 }
             }
         }
