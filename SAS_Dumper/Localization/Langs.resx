@@ -162,4 +162,10 @@
   <data name="SASManual" xml:space="preserve">
     <value>手动汇报了 {0} 个 Bot</value>
   </data>
+  <data name="TokenDumpSuccess" xml:space="preserve">
+    <value>Token信息已保存至 {0}</value>
+  </data>
+  <data name="TokenDumpFailed" xml:space="preserve">
+    <value>导出Token失败 {0}</value>
+  </data>
 </root>

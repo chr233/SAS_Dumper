@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Composition;
 using System.Collections.Concurrent;
 using SAS_Dumper.Data;
+using ArchiSteamFarm.Core;
 
 namespace SAS_Dumper
 {
@@ -130,19 +131,29 @@ namespace SAS_Dumper
                         case "SASTOFF" when OnlineMode && access >= EAccess.Master:
                             return SAS.Command.ResponseSASController(false);
 
+                        case "SASFRESH" when access >= EAccess.Master:
+                            return await SAS.Command.ResponseSASFresh(BotTokenCache).ConfigureAwait(false);
+
                         case "SASMANUAL" when OnlineMode && access >= EAccess.Master:
-                            return await SAS.Command.ResponseSASManualFeedback().ConfigureAwait(false);
+                            return await SAS.Command.ResponseSASManualFeedback(BotTokenCache).ConfigureAwait(false);
 
                         case "SAS" when access >= EAccess.Master:
-
+                            return await SAS.Command.ResponseSASDump(BotTokenCache, null).ConfigureAwait(false);
 
                         default:
                             return null;
                     }
 
                 default: //带参数
-                    return null;
+                    switch (args[0].ToUpperInvariant())
+                    {
+                        //SAS
+                        case "SAS" when access >= EAccess.Master:
+                            return await SAS.Command.ResponseSASDump(BotTokenCache, Utilities.GetArgsAsText(message, 1)).ConfigureAwait(false);
 
+                        default:
+                            return null;
+                    }
             }
         }
 
@@ -153,20 +164,17 @@ namespace SAS_Dumper
         /// <returns></returns>
         public async Task OnBotLoggedOn(Bot bot)
         {
-            if (SASConfig.Enabled)
+            var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
+            if (!string.IsNullOrEmpty(accessToken))
             {
-                var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
-                if (!string.IsNullOrEmpty(accessToken))
-                {
-                    BotTokenCache.TryAdd(
-                        bot.BotName,
-                        new BotInfo { SteamID=bot.SteamID, AccessToken=accessToken, }
-                 );
-                }
-                else
-                {
-                    ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.FetchTokenFailure, bot.BotName));
-                }
+                BotTokenCache.TryAdd(
+                    bot.BotName,
+                    new BotInfo { SteamID=bot.SteamID, AccessToken=accessToken, }
+             );
+            }
+            else
+            {
+                ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.FetchTokenFailure, bot.BotName));
             }
         }
 
@@ -178,7 +186,7 @@ namespace SAS_Dumper
         /// <returns></returns>
         public Task OnBotDisconnected(Bot bot, EResult reason)
         {
-            BotInfoDict.Keys.Remove(bot.BotName);
+            BotTokenCache.Keys.Remove(bot.BotName);
             return Task.CompletedTask;
         }
     }

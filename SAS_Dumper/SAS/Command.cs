@@ -4,9 +4,11 @@ using Newtonsoft.Json;
 using SAS_Dumper.Data;
 using SteamKit2.Internal;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
-using static SteamKit2.GC.Dota.Internal.CMsgDOTABotDebugInfo;
 
 namespace SAS_Dumper.SAS
 {
@@ -36,70 +38,85 @@ namespace SAS_Dumper.SAS
         }
 
         /// <summary>
-        /// 手动汇报
+        /// 手动刷新Token
         /// </summary>
         /// <returns></returns>
-        internal static async Task<string> ResponseSASManualFeedback()
+        internal static async Task<string> ResponseSASFresh(IDictionary<string, BotInfo> botTokens)
         {
-            HashSet<Bot>? bots = Bot.GetBots("ASF");
+            var bots = Bot.GetBots("ASF");
 
-            if (bots == null)
+            botTokens.Clear();
+
+            if (bots == null || !bots.Any())
             {
                 return FormatStaticResponse(string.Format(CurrentCulture, Langs.NoBotsAvilable));
             }
-
-            var BotTokenCache = new ConcurrentDictionary<string, BotInfo>();
 
             foreach (var bot in bots.Where(x => x.IsConnectedAndLoggedOn))
             {
                 var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
                 if (!string.IsNullOrEmpty(accessToken))
                 {
-                    BotTokenCache.TryAdd(
+                    botTokens.TryAdd(
                         bot.BotName,
                         new BotInfo { SteamID=bot.SteamID, AccessToken=accessToken, }
                     );
                 }
             }
 
-            if (BotTokenCache.Any())
+            return FormatStaticResponse(string.Format(CurrentCulture, Langs.SASManual, botTokens.Count));
+        }
+
+
+        /// <summary>
+        /// 手动汇报
+        /// </summary>
+        /// <returns></returns>
+        internal static async Task<string> ResponseSASManualFeedback(IDictionary<string, BotInfo> botTokens)
+        {
+            if (botTokens.Any())
             {
-                await WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
+                await WebRequests.SASFeedback(botTokens).ConfigureAwait(false);
             }
 
-            return FormatStaticResponse(string.Format(CurrentCulture, Langs.SASManual, BotTokenCache.Count));
+            return FormatStaticResponse(string.Format(CurrentCulture, Langs.SASManual, botTokens.Count));
         }
 
         /// <summary>
         /// 批量导出Token
         /// </summary>
         /// <returns></returns>
-        internal static async Task<string> ResponseSASDump(string? desc = null)
+        internal static async Task<string> ResponseSASDump(IDictionary<string, BotInfo> botTokens, string? desc = null)
         {
-            HashSet<Bot>? bots = Bot.GetBots("ASF");
+            var bots = Bot.GetBots("ASF");
 
-            if (bots == null)
+            if (bots == null || !bots.Any())
             {
                 return FormatStaticResponse(string.Format(CurrentCulture, Langs.NoBotsAvilable));
+            }
+
+            if (!string.IsNullOrEmpty(desc))
+            {
+                desc=desc.Replace('-', '_').Replace(' ', '_');
+                if (!desc.EndsWith('_'))
+                {
+                    desc += '_';
+                }
+            }
+            else
+            {
+                desc="";
             }
 
             int count = 0;
             StringBuilder sb = new();
 
-            foreach (var bot in bots.Where(x => x.IsConnectedAndLoggedOn))
+            foreach (var (botName, botInfo) in botTokens)
             {
-                var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
-                if (!string.IsNullOrEmpty(accessToken))
+                if (!string.IsNullOrEmpty(botInfo.AccessToken))
                 {
                     count++;
-                    if (!string.IsNullOrEmpty(desc))
-                    {
-                        sb.AppendLine($"{bot.SteamID}, {accessToken}, {desc}_{bot.BotName}");
-                    }
-                    else
-                    {
-                        sb.AppendLine($"{bot.SteamID}, {accessToken}, {bot.BotName}");
-                    }
+                    sb.AppendLine($"{botInfo.SteamID}, {botInfo.AccessToken}, {desc}{botName}");
                 }
             }
 
@@ -107,9 +124,8 @@ namespace SAS_Dumper.SAS
             {
                 try
                 {
-                    string currentPath = MyLocation ?? ".";
-                    string pluginFolder = Path.GetDirectoryName(currentPath) ?? ".";
-                    string filePath = Path.Combine(pluginFolder, bot.BotName + ".json");
+                    string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    string filePath = Path.Combine(folderPath, $"SAS_{DateTime.Now:yyyy-MM-dd}.txt");
 
                     using var file = File.CreateText(filePath);
 
@@ -117,33 +133,34 @@ namespace SAS_Dumper.SAS
                         DefaultValueHandling = DefaultValueHandling.Include
                     };
 
-                    var json = JsonConvert.SerializeObject(inventory);
-                    await file.WriteAsync(json).ConfigureAwait(false);
-
+                    await file.WriteAsync(sb).ConfigureAwait(false);
                     await file.FlushAsync().ConfigureAwait(false);
 
-                    return bot.FormatBotResponse($"物品栏已保存至 {filePath}");
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        var p = new Process {
+                            StartInfo =
+                            {
+                                FileName = "explorer",
+                                WorkingDirectory = folderPath,
+                                Arguments = "/select,"+ filePath
+                            }
+                        };
+                        p.Start();
+                    }
+
+                    return FormatStaticResponse(string.Format(Langs.TokenDumpSuccess, filePath));
                 }
                 catch (Exception ex)
                 {
                     ASFLogger.LogGenericException(ex);
-                    return bot.FormatBotResponse($"导出物品栏遇到错误 {ex}");
+                    return FormatStaticResponse(string.Format(Langs.TokenDumpFailed, ex));
                 }
-
-
-
-
-                await WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
             }
             else
             {
-                return FormatStaticResponse(string.Format(CurrentCulture, Langs.SAD, count));
+                return FormatStaticResponse(string.Format(CurrentCulture, Langs.NoBotsAvilable));
             }
-
-            return FormatStaticResponse(string.Format(CurrentCulture, Langs.SASManual, BotTokenCache.Count));
         }
-
-
-
     }
 }

@@ -98,7 +98,6 @@ namespace SAS_Dumper.SAS
                 {
                     ASFLogger.LogGenericWarning(string.Format(CurrentCulture, Langs.SASFailed, response.StatusCode, rawResponse));
                 }
-
             }
         }
     }

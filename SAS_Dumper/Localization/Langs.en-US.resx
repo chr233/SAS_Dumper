@@ -162,4 +162,10 @@
   <data name="SASManual" xml:space="preserve">
     <value>Manual feedback {0} bots</value>
   </data>
+  <data name="TokenDumpFailed" xml:space="preserve">
+    <value>Dump tokens failed {0}</value>
+  </data>
+  <data name="TokenDumpSuccess" xml:space="preserve">
+    <value>Successfully dump tokens to {0}</value>
+  </data>
 </root>

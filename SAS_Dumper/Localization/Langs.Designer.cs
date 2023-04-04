@@ -194,5 +194,23 @@ namespace SAS_Dumper.Localization {
                 return ResourceManager.GetString("Success", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   查找类似 导出Token失败 {0} 的本地化字符串。
+        /// </summary>
+        internal static string TokenDumpFailed {
+            get {
+                return ResourceManager.GetString("TokenDumpFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Token信息已保存至 {0} 的本地化字符串。
+        /// </summary>
+        internal static string TokenDumpSuccess {
+            get {
+                return ResourceManager.GetString("TokenDumpSuccess", resourceCulture);
+            }
+        }
     }
 }
