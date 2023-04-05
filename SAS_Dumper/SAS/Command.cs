@@ -116,7 +116,7 @@ namespace SAS_Dumper.SAS
                 }
             }
 
-            if (count>0)
+            if (count > 0)
             {
                 try
                 {
@@ -132,7 +132,7 @@ namespace SAS_Dumper.SAS
                     await file.WriteAsync(sb).ConfigureAwait(false);
                     await file.FlushAsync().ConfigureAwait(false);
 
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    try
                     {
                         var p = new Process {
                             StartInfo =
@@ -143,6 +143,10 @@ namespace SAS_Dumper.SAS
                             }
                         };
                         p.Start();
+                    }
+                    catch (Exception ex)
+                    {
+                        ASFLogger.LogGenericException(ex);
                     }
 
                     return FormatStaticResponse(string.Format(Langs.TokenDumpSuccess, filePath));
