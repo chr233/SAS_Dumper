@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
+
 using SAS_Dumper.Data;
+
 using System.Net;
 using System.Text;
 
@@ -49,11 +51,11 @@ namespace SAS_Dumper.SAS
             {
                 string json = JsonConvert.SerializeObject(payload);
 
-                HttpRequestMessage request = new(HttpMethod.Post, "/adv/bots/muli") {
+                var request = new HttpRequestMessage(HttpMethod.Post, "/adv/bots/muli") {
                     Content = new StringContent(json, Encoding.UTF8, "application/json")
                 };
 
-                HttpResponseMessage response = await Http.SendAsync(request).ConfigureAwait(false);
+                var response = await Http.SendAsync(request).ConfigureAwait(false);
 
                 bool success = response.StatusCode == HttpStatusCode.OK;
 
@@ -61,13 +63,13 @@ namespace SAS_Dumper.SAS
 
                 if (success)
                 {
-                    SASResult? result = JsonConvert.DeserializeObject<SASResult>(rawResponse);
+                    var result = JsonConvert.DeserializeObject<SASResult>(rawResponse);
 
                     if (result != null)
                     {
                         int succCount = 0, failCount = 0;
 
-                        foreach (List<string> res in result.Result)
+                        foreach (var res in result.Result)
                         {
                             if (res.Count == 4)
                             {
