@@ -1,10 +1,13 @@
 ﻿using ArchiSteamFarm.Core;
 using ArchiSteamFarm.Plugins.Interfaces;
 using ArchiSteamFarm.Steam;
+
 using Newtonsoft.Json.Linq;
+
 using SAS_Dumper.Data;
-using SAS_Dumper.Storage;
+
 using SteamKit2;
+
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Composition;
@@ -30,7 +33,7 @@ namespace SAS_Dumper
         /// <returns></returns>
         public Task OnASFInit(IReadOnlyDictionary<string, JToken>? additionalConfigProperties = null)
         {
-            Config? config = null;
+            PluginConfig? config = null;
 
             if (additionalConfigProperties != null)
             {
@@ -40,7 +43,7 @@ namespace SAS_Dumper
                     {
                         if (configProperty == "SASConfig")
                         {
-                            config = configValue.ToObject<Config>();
+                            config = configValue.ToObject<PluginConfig>();
                             break;
                         }
                     }
@@ -110,51 +113,31 @@ namespace SAS_Dumper
                 throw new InvalidEnumArgumentException(nameof(access), (int)access, typeof(EAccess));
             }
 
-            switch (args.Length)
-            {
-                case 0:
-                    throw new InvalidOperationException(nameof(args.Length));
-                case 1: //不带参数
-                    switch (args[0].ToUpperInvariant())
-                    {
-                        //Other
-                        case "SASDUMPER" when access >= EAccess.Master:
-                            return Other.Command.ResponseSASDumperVersion();
+            var cmd = args[0].ToUpperInvariant();
+            var argLength = args.Length;
 
-                        //SAS
-                        case "SASTEST" when OnlineMode && access >= EAccess.Master:
-                            return await SAS.Command.ResponseSASTest().ConfigureAwait(false);
-
-                        case "SASON" when OnlineMode && access >= EAccess.Master:
-                            return SAS.Command.ResponseSASController(true);
-
-                        case "SASTOFF" when OnlineMode && access >= EAccess.Master:
-                            return SAS.Command.ResponseSASController(false);
-
-                        case "SASFRESH" when access >= EAccess.Master:
-                            return await SAS.Command.ResponseSASFresh(BotTokenCache).ConfigureAwait(false);
-
-                        case "SASMANUAL" when OnlineMode && access >= EAccess.Master:
-                            return await SAS.Command.ResponseSASManualFeedback(BotTokenCache).ConfigureAwait(false);
-
-                        case "SAS" when access >= EAccess.Master:
-                            return await SAS.Command.ResponseSASDump(BotTokenCache, null).ConfigureAwait(false);
-
-                        default:
-                            return null;
-                    }
-
-                default: //带参数
-                    switch (args[0].ToUpperInvariant())
-                    {
-                        //SAS
-                        case "SAS" when access >= EAccess.Master:
-                            return await SAS.Command.ResponseSASDump(BotTokenCache, Utilities.GetArgsAsText(message, 1)).ConfigureAwait(false);
-
-                        default:
-                            return null;
-                    }
-            }
+            return argLength switch {
+                0 => throw new InvalidOperationException(nameof(args.Length)),
+                1 => cmd switch //不带参数
+                {
+                    //Other
+                    "SASDUMPER" when access >= EAccess.Master => Other.Command.ResponseSASDumperVersion(),
+                    //SAS
+                    "SASTEST" when OnlineMode && access >= EAccess.Master => await SAS.Command.ResponseSASTest().ConfigureAwait(false),
+                    "SASON" when OnlineMode && access >= EAccess.Master => SAS.Command.ResponseSASController(true),
+                    "SASTOFF" when OnlineMode && access >= EAccess.Master => SAS.Command.ResponseSASController(false),
+                    "SASFRESH" when access >= EAccess.Master => await SAS.Command.ResponseSASFresh(BotTokenCache).ConfigureAwait(false),
+                    "SASMANUAL" when OnlineMode && access >= EAccess.Master => await SAS.Command.ResponseSASManualFeedback(BotTokenCache).ConfigureAwait(false),
+                    "SAS" when access >= EAccess.Master => await SAS.Command.ResponseSASDump(BotTokenCache, null).ConfigureAwait(false),
+                    _ => null,
+                },
+                _ => cmd switch //带参数
+                {
+                    //SAS
+                    "SAS" when access >= EAccess.Master => await SAS.Command.ResponseSASDump(BotTokenCache, Utilities.GetArgsAsText(message, 1)).ConfigureAwait(false),
+                    _ => null,
+                },
+            };
         }
 
         /// <summary>
@@ -187,7 +170,6 @@ namespace SAS_Dumper
         /// <returns></returns>
         public Task OnBotDisconnected(Bot bot, EResult reason)
         {
-
             return Task.CompletedTask;
         }
 
@@ -200,7 +182,7 @@ namespace SAS_Dumper
         {
             return Task.CompletedTask;
         }
-        
+
         /// <summary>
         /// Bot删除
         /// </summary>

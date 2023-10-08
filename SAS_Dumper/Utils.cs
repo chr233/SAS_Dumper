@@ -1,27 +1,70 @@
 ﻿using ArchiSteamFarm.Core;
 using ArchiSteamFarm.NLog;
+using ArchiSteamFarm.Steam;
 using ArchiSteamFarm.Steam.Integration;
 using ArchiSteamFarm.Steam.Interaction;
-using SAS_Dumper.Storage;
+using SAS_Dumper.Data;
+
+using System.Text;
 
 namespace SAS_Dumper
 {
     internal static class Utils
     {
         /// <summary>
-        /// 格式化Bot输出
+        /// 格式化返回文本
         /// </summary>
-        /// <param name="response"></param>
+        /// <param name="message"></param>
         /// <returns></returns>
-        internal static string FormatStaticResponse(string response)
+        internal static string FormatStaticResponse(string message)
         {
-            return Commands.FormatStaticResponse(response);
+            return $"<ASF> {message}";
         }
+
+        /// <summary>
+        /// 格式化返回文本
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        internal static string FormatStaticResponse(string message, params object?[] args)
+        {
+            return FormatStaticResponse(string.Format(message, args));
+        }
+
+        /// <summary>
+        /// 格式化返回文本
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        internal static string FormatBotResponse(this Bot bot, string message)
+        {
+            return $"<{bot.BotName}> {message}";
+        }
+
+        /// <summary>
+        /// 格式化返回文本
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <param name="message"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        internal static string FormatBotResponse(this Bot bot, string message, params object?[] args)
+        {
+            return bot.FormatBotResponse(string.Format(message, args));
+        }
+
+        internal static StringBuilder AppendLineFormat(this StringBuilder sb, string format, params object?[] args)
+        {
+            return sb.AppendLine(string.Format(format, args));
+        }
+
 
         /// <summary>
         /// 配置文件
         /// </summary>
-        internal static Config SASConfig { get; set; } = new();
+        internal static PluginConfig SASConfig { get; set; } = new();
 
         /// <summary>
         /// 日志

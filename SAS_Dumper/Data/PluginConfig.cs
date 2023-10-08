@@ -1,11 +1,11 @@
 using Newtonsoft.Json;
 
-namespace SAS_Dumper.Storage
+namespace SAS_Dumper.Data
 {
     /// <summary>
     /// 应用配置
     /// </summary>
-    public sealed record Config
+    public sealed record PluginConfig
     {
         /// <summary>
         /// 自动汇报
