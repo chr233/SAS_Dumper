@@ -7,8 +7,6 @@ using Newtonsoft.Json.Linq;
 using SAS_Dumper.Data;
 
 using SteamKit2;
-
-using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Composition;
 using System.Reflection;
@@ -93,10 +91,10 @@ namespace SAS_Dumper
             try
             {
                 var flag = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-                var handler = typeof(SAS_Dumper).GetMethod(nameof(SAS_Dumper), flag);
+                var handler = typeof(SAS_Dumper).GetMethod(nameof(ResponseCommand), flag);
 
                 const string pluginName = nameof(SAS_Dumper);
-                const string cmdPrefix = "ABB";
+                const string cmdPrefix = "SAS";
                 const string? repoName = null;
 
                 ASFEBridge = AdapterBtidge.InitAdapter(pluginName, cmdPrefix, repoName, handler);
@@ -119,7 +117,7 @@ namespace SAS_Dumper
         /// <param name="args"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        private static Task<string?>? ResponseCommand(Bot bot, EAccess access, string cmd, string message, string[] args)
+        private static Task<string?>? ResponseCommand(EAccess access, string cmd, string message, string[] args)
         {
             int argLength = args.Length;
             return argLength switch
@@ -188,7 +186,7 @@ namespace SAS_Dumper
                     cmd = cmd[4..];
                 }
 
-                var task = ResponseCommand(bot, access, cmd, message, args);
+                var task = ResponseCommand(access, cmd, message, args);
                 if (task != null)
                 {
                     return await task.ConfigureAwait(false);

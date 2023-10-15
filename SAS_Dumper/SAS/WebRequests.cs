@@ -51,7 +51,8 @@ namespace SAS_Dumper.SAS
             {
                 string json = JsonConvert.SerializeObject(payload);
 
-                var request = new HttpRequestMessage(HttpMethod.Post, "/adv/bots/muli") {
+                var request = new HttpRequestMessage(HttpMethod.Post, "/adv/bots/muli")
+                {
                     Content = new StringContent(json, Encoding.UTF8, "application/json")
                 };
 
