@@ -1,16 +1,18 @@
-﻿using ArchiSteamFarm.Core;
+using ArchiSteamFarm.Core;
 using ArchiSteamFarm.NLog;
 using ArchiSteamFarm.Steam;
 using ArchiSteamFarm.Steam.Integration;
-using ArchiSteamFarm.Steam.Interaction;
 using SAS_Dumper.Data;
-
+using System.Collections.Concurrent;
 using System.Text;
 
 namespace SAS_Dumper
 {
     internal static class Utils
     {
+        internal static bool OnlineMode { get; set; }
+        internal static ConcurrentDictionary<string, BotInfo> BotTokenCache { get; } = new();
+
         /// <summary>
         /// 格式化返回文本
         /// </summary>

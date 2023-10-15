@@ -8,7 +8,7 @@ namespace SAS_Dumper.Other
         /// 查看插件版本
         /// </summary>
         /// <returns></returns>
-        internal static string ResponseSASDumperVersion()
+        internal static string? ResponseSASDumperVersion()
         {
             Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version ?? new("0.0.0.0");
 

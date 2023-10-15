@@ -1,4 +1,4 @@
-﻿using ArchiSteamFarm.Core;
+using ArchiSteamFarm.Core;
 using ArchiSteamFarm.Plugins.Interfaces;
 using ArchiSteamFarm.Steam;
 
@@ -11,6 +11,7 @@ using SteamKit2;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Composition;
+using System.Reflection;
 
 namespace SAS_Dumper
 {
@@ -20,11 +21,9 @@ namespace SAS_Dumper
         public string Name => nameof(SAS_Dumper);
         public Version Version => typeof(SAS_Dumper).Assembly.GetName().Version ?? throw new ArgumentNullException(nameof(Version));
 
-        private bool OnlineMode { get; set; }
+        private AdapterBtidge? ASFEBridge = null;
 
         private Timer? FeedBackTimer { get; set; }
-
-        private ConcurrentDictionary<string, BotInfo> BotTokenCache { get; } = new();
 
         /// <summary>
         /// ASF启动事件
@@ -60,7 +59,8 @@ namespace SAS_Dumper
                 Http.BaseAddress = new(config.SASUrl);
                 Http.DefaultRequestHeaders.Add("auth", config.SASPasswd);
                 FeedBackTimer = new Timer(
-                    async (_) => {
+                    async (_) =>
+                    {
                         if (SASConfig.Enabled)
                         {
                             await SAS.WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
@@ -72,7 +72,7 @@ namespace SAS_Dumper
 
                 ASFLogger.LogGenericInfo(string.Format(Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
 
-                OnlineMode=true;
+                OnlineMode = true;
             }
             else
             {
@@ -90,10 +90,71 @@ namespace SAS_Dumper
         /// <returns></returns>
         public Task OnLoaded()
         {
-            ASFLogger.LogGenericInfo(string.Format(Langs.PluginVer, nameof(SAS_Dumper), Version.Major, Version.Minor, Version.Build, Version.Revision));
-            ASFLogger.LogGenericInfo(string.Format(Langs.PluginContact));
-            Misc.Handler.Init();
+            try
+            {
+                var flag = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+                var handler = typeof(SAS_Dumper).GetMethod(nameof(SAS_Dumper), flag);
+
+                const string pluginName = nameof(SAS_Dumper);
+                const string cmdPrefix = "ABB";
+                const string? repoName = null;
+
+                ASFEBridge = AdapterBtidge.InitAdapter(pluginName, cmdPrefix, repoName, handler);
+                ASF.ArchiLogger.LogGenericDebug(ASFEBridge != null ? "ASFEBridge 注册成功" : "ASFEBridge 注册失败");
+            }
+            catch (Exception ex)
+            {
+                ASF.ArchiLogger.LogGenericDebug("ASFEBridge 注册出错");
+                ASF.ArchiLogger.LogGenericException(ex);
+            }
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// 处理命令
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <param name="access"></param>
+        /// <param name="message"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        private static Task<string?>? ResponseCommand(Bot bot, EAccess access, string cmd, string message, string[] args)
+        {
+            int argLength = args.Length;
+            return argLength switch
+            {
+                0 => throw new InvalidOperationException(nameof(args.Length)),
+                1 => cmd switch //不带参数
+                {
+                    //Other
+                    "SASDUMPER" when access >= EAccess.Master =>
+                        Task.FromResult(Other.Command.ResponseSASDumperVersion()),
+                    //SAS
+                    "SASTEST" when OnlineMode && access >= EAccess.Master =>
+                        SAS.Command.ResponseSASTest(),
+                    "SASON" when OnlineMode && access >= EAccess.Master =>
+                        Task.FromResult(SAS.Command.ResponseSASController(true)),
+                    "SASTOFF" when OnlineMode && access >= EAccess.Master =>
+                        Task.FromResult(SAS.Command.ResponseSASController(false)),
+                    "SASFRESH" when access >= EAccess.Master =>
+                        SAS.Command.ResponseSASFresh(BotTokenCache),
+                    "SASMANUAL" when OnlineMode && access >= EAccess.Master =>
+                        SAS.Command.ResponseSASManualFeedback(BotTokenCache),
+                    "SAS" when access >= EAccess.Master =>
+                        SAS.Command.ResponseSASDump(BotTokenCache, null),
+
+                    _ => null,
+                },
+                _ => cmd switch //带参数
+                {
+                    //SAS
+                    "SAS" when access >= EAccess.Master =>
+                        SAS.Command.ResponseSASDump(BotTokenCache, Utilities.GetArgsAsText(message, 1)),
+
+                    _ => null,
+                },
+            };
         }
 
         /// <summary>
@@ -108,36 +169,45 @@ namespace SAS_Dumper
         /// <exception cref="InvalidOperationException"></exception>
         public async Task<string?> OnBotCommand(Bot bot, EAccess access, string message, string[] args, ulong steamID = 0)
         {
+            if (ASFEBridge != null)
+            {
+                return null;
+            }
+
             if (!Enum.IsDefined(access))
             {
                 throw new InvalidEnumArgumentException(nameof(access), (int)access, typeof(EAccess));
             }
 
-            var cmd = args[0].ToUpperInvariant();
-            var argLength = args.Length;
+            try
+            {
+                var cmd = args[0].ToUpperInvariant();
 
-            return argLength switch {
-                0 => throw new InvalidOperationException(nameof(args.Length)),
-                1 => cmd switch //不带参数
+                if (cmd.StartsWith("SAS."))
                 {
-                    //Other
-                    "SASDUMPER" when access >= EAccess.Master => Other.Command.ResponseSASDumperVersion(),
-                    //SAS
-                    "SASTEST" when OnlineMode && access >= EAccess.Master => await SAS.Command.ResponseSASTest().ConfigureAwait(false),
-                    "SASON" when OnlineMode && access >= EAccess.Master => SAS.Command.ResponseSASController(true),
-                    "SASTOFF" when OnlineMode && access >= EAccess.Master => SAS.Command.ResponseSASController(false),
-                    "SASFRESH" when access >= EAccess.Master => await SAS.Command.ResponseSASFresh(BotTokenCache).ConfigureAwait(false),
-                    "SASMANUAL" when OnlineMode && access >= EAccess.Master => await SAS.Command.ResponseSASManualFeedback(BotTokenCache).ConfigureAwait(false),
-                    "SAS" when access >= EAccess.Master => await SAS.Command.ResponseSASDump(BotTokenCache, null).ConfigureAwait(false),
-                    _ => null,
-                },
-                _ => cmd switch //带参数
+                    cmd = cmd[4..];
+                }
+
+                var task = ResponseCommand(bot, access, cmd, message, args);
+                if (task != null)
                 {
-                    //SAS
-                    "SAS" when access >= EAccess.Master => await SAS.Command.ResponseSASDump(BotTokenCache, Utilities.GetArgsAsText(message, 1)).ConfigureAwait(false),
-                    _ => null,
-                },
-            };
+                    return await task.ConfigureAwait(false);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(500).ConfigureAwait(false);
+                    Utils.ASFLogger.LogGenericException(ex);
+                }).ConfigureAwait(false);
+
+                return ex.StackTrace;
+            }
         }
 
         /// <summary>
@@ -152,7 +222,7 @@ namespace SAS_Dumper
             {
                 BotTokenCache.TryAdd(
                     bot.BotName,
-                    new BotInfo { SteamID=bot.SteamID, AccessToken=accessToken, }
+                    new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken, }
                 );
             }
             else

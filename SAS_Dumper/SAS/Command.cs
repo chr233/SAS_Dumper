@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using SAS_Dumper.Data;
 using System.Diagnostics;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SAS_Dumper.SAS
@@ -11,10 +10,10 @@ namespace SAS_Dumper.SAS
     internal static class Command
     {
         /// <summary>
-        /// ≤‚ ‘∫ÛÃ®¡¨Õ®–‘
+        /// ÊµãËØïÂêéÂè∞ËøûÈÄöÊÄß
         /// </summary>
         /// <returns></returns>
-        internal static async Task<string> ResponseSASTest()
+        internal static async Task<string?> ResponseSASTest()
         {
             HttpResponseMessage response = await WebRequests.TestSAS().ConfigureAwait(false);
 
@@ -22,11 +21,11 @@ namespace SAS_Dumper.SAS
         }
 
         /// <summary>
-        /// øÿ÷∆◊‘∂Ø…œ¥´
+        /// ÊéßÂà∂Ëá™Âä®‰∏ä‰º†
         /// </summary>
         /// <param name="enable"></param>
         /// <returns></returns>
-        internal static string ResponseSASController(bool enable)
+        internal static string? ResponseSASController(bool enable)
         {
             SASConfig.Enabled = enable;
 
@@ -34,10 +33,10 @@ namespace SAS_Dumper.SAS
         }
 
         /// <summary>
-        ///  ÷∂ØÀ¢–¬Token
+        /// ÊâãÂä®Âà∑Êñ∞Token
         /// </summary>
         /// <returns></returns>
-        internal static async Task<string> ResponseSASFresh(IDictionary<string, BotInfo> botTokens)
+        internal static async Task<string?> ResponseSASFresh(IDictionary<string, BotInfo> botTokens)
         {
             var bots = Bot.GetBots("ASF");
 
@@ -55,7 +54,7 @@ namespace SAS_Dumper.SAS
                 {
                     botTokens.TryAdd(
                         bot.BotName,
-                        new BotInfo { SteamID=bot.SteamID, AccessToken=accessToken, }
+                        new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken, }
                     );
                 }
             }
@@ -65,10 +64,10 @@ namespace SAS_Dumper.SAS
 
 
         /// <summary>
-        ///  ÷∂Øª„±®
+        /// ÊâãÂä®Ê±áÊä•
         /// </summary>
         /// <returns></returns>
-        internal static async Task<string> ResponseSASManualFeedback(IDictionary<string, BotInfo> botTokens)
+        internal static async Task<string?> ResponseSASManualFeedback(IDictionary<string, BotInfo> botTokens)
         {
             if (botTokens.Any())
             {
@@ -79,10 +78,10 @@ namespace SAS_Dumper.SAS
         }
 
         /// <summary>
-        /// ≈˙¡øµº≥ˆToken
+        /// ÊâπÈáèÂØºÂá∫Token
         /// </summary>
         /// <returns></returns>
-        internal static async Task<string> ResponseSASDump(IDictionary<string, BotInfo> botTokens, string? desc = null)
+        internal static async Task<string?> ResponseSASDump(IDictionary<string, BotInfo> botTokens, string? desc = null)
         {
             var bots = Bot.GetBots("ASF");
 
@@ -93,7 +92,7 @@ namespace SAS_Dumper.SAS
 
             if (!string.IsNullOrEmpty(desc))
             {
-                desc=desc.Replace('-', '_').Replace(' ', '_');
+                desc = desc.Replace('-', '_').Replace(' ', '_');
                 if (!desc.EndsWith('_'))
                 {
                     desc += '_';
@@ -101,7 +100,7 @@ namespace SAS_Dumper.SAS
             }
             else
             {
-                desc="";
+                desc = "";
             }
 
             int count = 0;
@@ -125,7 +124,8 @@ namespace SAS_Dumper.SAS
 
                     using var file = File.CreateText(filePath);
 
-                    var setting = new JsonSerializerSettings {
+                    var setting = new JsonSerializerSettings
+                    {
                         DefaultValueHandling = DefaultValueHandling.Include
                     };
 
@@ -134,7 +134,8 @@ namespace SAS_Dumper.SAS
 
                     try
                     {
-                        var p = new Process {
+                        var p = new Process
+                        {
                             StartInfo =
                             {
                                 FileName = "explorer",

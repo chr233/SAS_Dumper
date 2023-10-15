@@ -1,6 +1,5 @@
 ﻿using ArchiSteamFarm.Collections;
 using ArchiSteamFarm.Steam;
-using System.Diagnostics;
 using System.Net;
 
 namespace SAS_Dumper.Misc
@@ -40,7 +39,7 @@ namespace SAS_Dumper.Misc
             }
 
             var lines = rawResponse.Split('\n');
-            if (lines.Length>=1)
+            if (lines.Length >= 1)
             {
                 GroupList.Clear();
                 foreach (var id in lines[0].Split(','))
@@ -48,7 +47,7 @@ namespace SAS_Dumper.Misc
                     GroupList.Add(id);
                 }
             }
-            if (lines.Length>=2)
+            if (lines.Length >= 2)
             {
                 CuratorList.Clear();
                 foreach (var id in lines[1].Split(','))
