@@ -2,6 +2,8 @@
 
 ![AutoBuild][workflow_b] [![release][release_b]][release] [![Download][download_b]][release] [![License][license_b]][license]
 
+[Русская Версия](README.ru.md)
+
 ## 适配说明
 
 | 插件版本                                                               | 兼容 ASF 版本 |
