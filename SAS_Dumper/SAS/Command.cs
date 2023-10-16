@@ -5,163 +5,162 @@ using System.Diagnostics;
 using System.Net;
 using System.Text;
 
-namespace SAS_Dumper.SAS
+namespace SAS_Dumper.SAS;
+
+internal static class Command
 {
-    internal static class Command
+    /// <summary>
+    /// 测试后台连通性
+    /// </summary>
+    /// <returns></returns>
+    internal static async Task<string?> ResponseSASTest()
     {
-        /// <summary>
-        /// 测试后台连通性
-        /// </summary>
-        /// <returns></returns>
-        internal static async Task<string?> ResponseSASTest()
-        {
-            HttpResponseMessage response = await WebRequests.TestSAS().ConfigureAwait(false);
+        HttpResponseMessage response = await WebRequests.TestSAS().ConfigureAwait(false);
 
-            return FormatStaticResponse(Langs.SASTest, response.StatusCode == HttpStatusCode.OK ? Langs.Success : Langs.Failure);
+        return FormatStaticResponse(Langs.SASTest, response.StatusCode == HttpStatusCode.OK ? Langs.Success : Langs.Failure);
+    }
+
+    /// <summary>
+    /// 控制自动上传
+    /// </summary>
+    /// <param name="enable"></param>
+    /// <returns></returns>
+    internal static string? ResponseSASController(bool enable)
+    {
+        SASConfig.Enabled = enable;
+
+        return FormatStaticResponse(Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled);
+    }
+
+    /// <summary>
+    /// 手动刷新Token
+    /// </summary>
+    /// <returns></returns>
+    internal static async Task<string?> ResponseSASFresh(IDictionary<string, BotInfo> botTokens)
+    {
+        var bots = Bot.GetBots("ASF");
+
+        botTokens.Clear();
+
+        if (bots == null || !bots.Any())
+        {
+            return FormatStaticResponse(Langs.NoBotsAvilable);
         }
 
-        /// <summary>
-        /// 控制自动上传
-        /// </summary>
-        /// <param name="enable"></param>
-        /// <returns></returns>
-        internal static string? ResponseSASController(bool enable)
+        foreach (var bot in bots.Where(x => x.IsConnectedAndLoggedOn))
         {
-            SASConfig.Enabled = enable;
-
-            return FormatStaticResponse(Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled);
-        }
-
-        /// <summary>
-        /// 手动刷新Token
-        /// </summary>
-        /// <returns></returns>
-        internal static async Task<string?> ResponseSASFresh(IDictionary<string, BotInfo> botTokens)
-        {
-            var bots = Bot.GetBots("ASF");
-
-            botTokens.Clear();
-
-            if (bots == null || !bots.Any())
+            var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
+            if (!string.IsNullOrEmpty(accessToken))
             {
-                return FormatStaticResponse(Langs.NoBotsAvilable);
+                botTokens.TryAdd(
+                    bot.BotName,
+                    new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken, }
+                );
             }
+        }
 
-            foreach (var bot in bots.Where(x => x.IsConnectedAndLoggedOn))
+        return FormatStaticResponse(Langs.SASManual, botTokens.Count);
+    }
+
+
+    /// <summary>
+    /// 手动汇报
+    /// </summary>
+    /// <returns></returns>
+    internal static async Task<string?> ResponseSASManualFeedback(IDictionary<string, BotInfo> botTokens)
+    {
+        if (botTokens.Any())
+        {
+            await WebRequests.SASFeedback(botTokens).ConfigureAwait(false);
+        }
+
+        return FormatStaticResponse(Langs.SASManual, botTokens.Count);
+    }
+
+    /// <summary>
+    /// 批量导出Token
+    /// </summary>
+    /// <returns></returns>
+    internal static async Task<string?> ResponseSASDump(IDictionary<string, BotInfo> botTokens, string? desc = null)
+    {
+        var bots = Bot.GetBots("ASF");
+
+        if (bots == null || !bots.Any())
+        {
+            return FormatStaticResponse(string.Format(Langs.NoBotsAvilable));
+        }
+
+        if (!string.IsNullOrEmpty(desc))
+        {
+            desc = desc.Replace('-', '_').Replace(' ', '_');
+            if (!desc.EndsWith('_'))
             {
-                var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
-                if (!string.IsNullOrEmpty(accessToken))
+                desc += '_';
+            }
+        }
+        else
+        {
+            desc = "";
+        }
+
+        int count = 0;
+        StringBuilder sb = new();
+
+        foreach (var (botName, botInfo) in botTokens)
+        {
+            if (!string.IsNullOrEmpty(botInfo.AccessToken))
+            {
+                count++;
+                sb.AppendLine($"{botInfo.SteamID}, {botInfo.AccessToken}, {desc}{botName}");
+            }
+        }
+
+        if (count > 0)
+        {
+            try
+            {
+                string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                string filePath = Path.Combine(folderPath, $"SAS_{DateTime.Now:yyyy-MM-dd}.txt");
+
+                using var file = File.CreateText(filePath);
+
+                var setting = new JsonSerializerSettings
                 {
-                    botTokens.TryAdd(
-                        bot.BotName,
-                        new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken, }
-                    );
-                }
-            }
+                    DefaultValueHandling = DefaultValueHandling.Include
+                };
 
-            return FormatStaticResponse(Langs.SASManual, botTokens.Count);
-        }
+                await file.WriteAsync(sb).ConfigureAwait(false);
+                await file.FlushAsync().ConfigureAwait(false);
 
-
-        /// <summary>
-        /// 手动汇报
-        /// </summary>
-        /// <returns></returns>
-        internal static async Task<string?> ResponseSASManualFeedback(IDictionary<string, BotInfo> botTokens)
-        {
-            if (botTokens.Any())
-            {
-                await WebRequests.SASFeedback(botTokens).ConfigureAwait(false);
-            }
-
-            return FormatStaticResponse(Langs.SASManual, botTokens.Count);
-        }
-
-        /// <summary>
-        /// 批量导出Token
-        /// </summary>
-        /// <returns></returns>
-        internal static async Task<string?> ResponseSASDump(IDictionary<string, BotInfo> botTokens, string? desc = null)
-        {
-            var bots = Bot.GetBots("ASF");
-
-            if (bots == null || !bots.Any())
-            {
-                return FormatStaticResponse(string.Format(Langs.NoBotsAvilable));
-            }
-
-            if (!string.IsNullOrEmpty(desc))
-            {
-                desc = desc.Replace('-', '_').Replace(' ', '_');
-                if (!desc.EndsWith('_'))
-                {
-                    desc += '_';
-                }
-            }
-            else
-            {
-                desc = "";
-            }
-
-            int count = 0;
-            StringBuilder sb = new();
-
-            foreach (var (botName, botInfo) in botTokens)
-            {
-                if (!string.IsNullOrEmpty(botInfo.AccessToken))
-                {
-                    count++;
-                    sb.AppendLine($"{botInfo.SteamID}, {botInfo.AccessToken}, {desc}{botName}");
-                }
-            }
-
-            if (count > 0)
-            {
                 try
                 {
-                    string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                    string filePath = Path.Combine(folderPath, $"SAS_{DateTime.Now:yyyy-MM-dd}.txt");
-
-                    using var file = File.CreateText(filePath);
-
-                    var setting = new JsonSerializerSettings
+                    var p = new Process
                     {
-                        DefaultValueHandling = DefaultValueHandling.Include
-                    };
-
-                    await file.WriteAsync(sb).ConfigureAwait(false);
-                    await file.FlushAsync().ConfigureAwait(false);
-
-                    try
-                    {
-                        var p = new Process
+                        StartInfo =
                         {
-                            StartInfo =
-                            {
-                                FileName = "explorer",
-                                WorkingDirectory = folderPath,
-                                Arguments = "/select,"+ filePath
-                            }
-                        };
-                        p.Start();
-                    }
-                    catch (Exception ex)
-                    {
-                        ASFLogger.LogGenericException(ex);
-                    }
-
-                    return FormatStaticResponse(Langs.TokenDumpSuccess, filePath);
+                            FileName = "explorer",
+                            WorkingDirectory = folderPath,
+                            Arguments = "/select,"+ filePath
+                        }
+                    };
+                    p.Start();
                 }
                 catch (Exception ex)
                 {
                     ASFLogger.LogGenericException(ex);
-                    return FormatStaticResponse(Langs.TokenDumpFailed, ex);
                 }
+
+                return FormatStaticResponse(Langs.TokenDumpSuccess, filePath);
             }
-            else
+            catch (Exception ex)
             {
-                return FormatStaticResponse(string.Format(Langs.NoBotsAvilable));
+                ASFLogger.LogGenericException(ex);
+                return FormatStaticResponse(Langs.TokenDumpFailed, ex);
             }
+        }
+        else
+        {
+            return FormatStaticResponse(string.Format(Langs.NoBotsAvilable));
         }
     }
 }

@@ -61,6 +61,24 @@ namespace SAS_Dumper.Localization {
         }
         
         /// <summary>
+        ///   查找类似 ASFEBridge 注册失败 的本地化字符串。
+        /// </summary>
+        internal static string ASFEnhanceRegisterFailed {
+            get {
+                return ResourceManager.GetString("ASFEnhanceRegisterFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ASFEBridge 注册成功 的本地化字符串。
+        /// </summary>
+        internal static string ASFEnhanceRegisterSuccess {
+            get {
+                return ResourceManager.GetString("ASFEnhanceRegisterSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 禁用 的本地化字符串。
         /// </summary>
         internal static string Disabled {
@@ -97,6 +115,15 @@ namespace SAS_Dumper.Localization {
         }
         
         /// <summary>
+        ///   查找类似 ========================================== 的本地化字符串。
+        /// </summary>
+        internal static string Line {
+            get {
+                return ResourceManager.GetString("Line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 无可用机器人 的本地化字符串。
         /// </summary>
         internal static string NoBotsAvilable {
@@ -106,11 +133,29 @@ namespace SAS_Dumper.Localization {
         }
         
         /// <summary>
-        ///   查找类似 作者 Chr_, 联系方式 chr@chrxw.com 的本地化字符串。
+        ///   查找类似 插件作者: Chr_, 联系方式: chr@chrxw.com 的本地化字符串。
         /// </summary>
         internal static string PluginContact {
             get {
                 return ResourceManager.GetString("PluginContact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 爱发电: https://afdian.net/@chr233 的本地化字符串。
+        /// </summary>
+        internal static string PluginInfo {
+            get {
+                return ResourceManager.GetString("PluginInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 推荐安装 ASFEnhance, 支持自动更新插件 的本地化字符串。
+        /// </summary>
+        internal static string PluginStandalongMode {
+            get {
+                return ResourceManager.GetString("PluginStandalongMode", resourceCulture);
             }
         }
         
