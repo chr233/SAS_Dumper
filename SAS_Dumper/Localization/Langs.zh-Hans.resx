@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,7 +117,70 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="PluginContact" xml:space="preserve">
+    <value>插件作者: Chr_, 联系方式: chr@chrxw.com</value>
+  </data>
+  <data name="PluginVer" xml:space="preserve">
+    <value>{0} 版本 {1}.{2}.{3}.{4}</value>
+  </data>
+  <data name="ReadConfigError" xml:space="preserve">
+    <value>配置文件读取失败, 插件将不会运行</value>
+  </data>
+  <data name="PluginState" xml:space="preserve">
+    <value>插件状态: {0}</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>开启</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>禁用</value>
+  </data>
+  <data name="SASTest" xml:space="preserve">
+    <value>SAS连接性测试: {0}</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="Failure" xml:space="preserve">
+    <value>失败</value>
+  </data>
+  <data name="SASFeedStatus" xml:space="preserve">
+    <value>SAS汇报 {0} 个Bot, 成功 {1} 个, 失败 {2} 个</value>
+  </data>
+  <data name="FetchTokenFailure" xml:space="preserve">
+    <value>机器人 {0} 读取AccessToken失败</value>
+  </data>
+  <data name="SASAddBotFailed" xml:space="preserve">
+    <value>SAS添加机器人失败 {0}</value>
+  </data>
+  <data name="SASFailed" xml:space="preserve">
+    <value>状态码: {0} 返回值: {1}</value>
+  </data>
+  <data name="NoBotsAvilable" xml:space="preserve">
+    <value>无可用机器人</value>
+  </data>
+  <data name="SASManual" xml:space="preserve">
+    <value>手动汇报了 {0} 个 Bot</value>
+  </data>
+  <data name="TokenDumpSuccess" xml:space="preserve">
+    <value>Token信息已保存至 {0}</value>
+  </data>
+  <data name="TokenDumpFailed" xml:space="preserve">
+    <value>导出Token失败 {0}</value>
+  </data>
   <data name="Line" xml:space="preserve">
     <value>==========================================</value>
+  </data>
+  <data name="ASFEnhanceRegisterFailed" xml:space="preserve">
+    <value>ASFEBridge 注册失败</value>
+  </data>
+  <data name="ASFEnhanceRegisterSuccess" xml:space="preserve">
+    <value>ASFEBridge 注册成功</value>
+  </data>
+  <data name="PluginStandalongMode" xml:space="preserve">
+    <value>推荐安装 ASFEnhance, 支持自动更新插件</value>
+  </data>
+  <data name="PluginInfo" xml:space="preserve">
+    <value>爱发电: https://afdian.net/@chr233</value>
   </data>
 </root>

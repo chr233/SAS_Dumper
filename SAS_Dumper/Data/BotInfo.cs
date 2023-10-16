@@ -1,8 +1,7 @@
-﻿namespace SAS_Dumper.Data
+namespace SAS_Dumper.Data;
+
+internal sealed record BotInfo
 {
-    internal sealed class BotInfo
-    {
-        internal ulong SteamID { get; set; }
-        internal string AccessToken { get; set; }
-    }
+    internal ulong SteamID { get; set; }
+    internal string AccessToken { get; set; } = null!;
 }
