@@ -94,11 +94,11 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
         var flag = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
         var handler = typeof(SAS_Dumper).GetMethod(nameof(ResponseCommand), flag);
 
-        const string pluginName = nameof(SAS_Dumper);
+        const string pluginId = nameof(SAS_Dumper);
         const string cmdPrefix = "SAS";
         const string? repoName = null;
 
-        ASFEBridge = AdapterBtidge.InitAdapter(pluginName, cmdPrefix, repoName, handler);
+        ASFEBridge = AdapterBtidge.InitAdapter(Name, pluginId, cmdPrefix, repoName, handler);
 
         if (ASFEBridge)
         {
@@ -123,6 +123,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
     /// </summary>
     /// <param name="bot"></param>
     /// <param name="access"></param>
+    /// <param name="cmd"></param>
     /// <param name="message"></param>
     /// <param name="args"></param>
     /// <returns></returns>
@@ -172,6 +173,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
     /// <param name="access"></param>
     /// <param name="message"></param>
     /// <param name="args"></param>
+    /// <param name="steamID"></param>
     /// <returns></returns>
     /// <exception cref="InvalidEnumArgumentException"></exception>
     /// <exception cref="InvalidOperationException"></exception>
