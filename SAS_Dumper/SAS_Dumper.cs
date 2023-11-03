@@ -98,7 +98,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
         const string cmdPrefix = "SAS";
         const string? repoName = null;
 
-        ASFEBridge = AdapterBtidge.InitAdapter(Name, pluginId, cmdPrefix, repoName, handler);
+        ASFEBridge = AdapterBridge.InitAdapter(Name, pluginId, cmdPrefix, repoName, handler);
 
         if (ASFEBridge)
         {
