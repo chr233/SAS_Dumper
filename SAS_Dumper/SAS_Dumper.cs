@@ -150,7 +150,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
                     SAS.Command.ResponseSASFresh(BotTokenCache),
                 "SASMANUAL" when OnlineMode && access >= EAccess.Master =>
                     SAS.Command.ResponseSASManualFeedback(BotTokenCache),
-                "SAS" when access >= EAccess.Master =>
+                "SASDUMP" when access >= EAccess.Master =>
                     SAS.Command.ResponseSASDump(BotTokenCache, null),
 
                 _ => null,
@@ -158,7 +158,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
             _ => cmd switch //带参数
             {
                 //SAS
-                "SAS" when access >= EAccess.Master =>
+                "SASDUMP" when access >= EAccess.Master =>
                     SAS.Command.ResponseSASDump(BotTokenCache, Utilities.GetArgsAsText(message, 1)),
 
                 _ => null,
