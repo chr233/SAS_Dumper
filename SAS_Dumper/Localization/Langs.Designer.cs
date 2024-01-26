@@ -187,7 +187,7 @@ namespace SAS_Dumper.Localization {
         }
         
         /// <summary>
-        ///   查找类似 SAS添加机器人失败 {0} 的本地化字符串。
+        ///   查找类似 SAS添加机器人失败 {0} {1} 的本地化字符串。
         /// </summary>
         internal static string SASAddBotFailed {
             get {

@@ -151,7 +151,7 @@
     <value>机器人 {0} 读取AccessToken失败</value>
   </data>
   <data name="SASAddBotFailed" xml:space="preserve">
-    <value>SAS添加机器人失败 {0}</value>
+    <value>SAS添加机器人失败 {0} {1}</value>
   </data>
   <data name="SASFailed" xml:space="preserve">
     <value>状态码: {0} 返回值: {1}</value>

@@ -121,7 +121,6 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
     /// <summary>
     /// 处理命令
     /// </summary>
-    /// <param name="bot"></param>
     /// <param name="access"></param>
     /// <param name="cmd"></param>
     /// <param name="message"></param>

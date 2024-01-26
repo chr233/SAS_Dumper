@@ -11,5 +11,5 @@ internal sealed class SASResult
     internal string Message { get; set; } = "";
 
     [JsonProperty(PropertyName = "result")]
-    internal List<List<string>> Result { get; set; } = new();
+    internal List<List<string>> Result { get; set; } = [];
 }

@@ -2,6 +2,8 @@ namespace SAS_Dumper.Data;
 
 internal sealed record BotInfo
 {
-    internal ulong SteamID { get; set; }
-    internal string AccessToken { get; set; } = null!;
+    public ulong SteamID { get; set; }
+    public string AccessToken { get; set; } = null!;
+
+    public DateTime ExpiredAt { get; set; }
 }

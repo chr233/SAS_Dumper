@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 using SAS_Dumper.Data;
 
@@ -74,7 +74,8 @@ namespace SAS_Dumper.SAS
                         {
                             if (res.Count == 4)
                             {
-                                string name = res[0];
+                                string steamId = res[0];
+                                string desc = res[2];
                                 string state = res[3];
 
                                 if (state != "添加失败")
@@ -84,7 +85,7 @@ namespace SAS_Dumper.SAS
                                 else
                                 {
                                     failCount++;
-                                    ASFLogger.LogGenericWarning(string.Format(Langs.SASAddBotFailed, name));
+                                    ASFLogger.LogGenericWarning(string.Format(Langs.SASAddBotFailed, steamId, state));
                                 }
                             }
                         }
