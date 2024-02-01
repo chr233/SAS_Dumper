@@ -36,13 +36,13 @@ internal static class Command
     /// 手动刷新Token
     /// </summary>
     /// <returns></returns>
-    internal static async Task<string?> ResponseSASFresh(IDictionary<string, BotInfo> botTokens)
+    internal static async Task<string?> ResponseSASFresh()
     {
         var bots = Bot.GetBots("ASF");
 
-        botTokens.Clear();
+        BotTokenCache.Clear();
 
-        if (bots == null || !bots.Any())
+        if (bots == null || bots.Count == 0)
         {
             return FormatStaticResponse(Langs.NoBotsAvilable);
         }
@@ -52,40 +52,39 @@ internal static class Command
             var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
             if (!string.IsNullOrEmpty(accessToken))
             {
-                botTokens.TryAdd(
+                BotTokenCache.TryAdd(
                     bot.BotName,
-                    new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken, }
+                    new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken, ExpiredAt = DateTime.Now.AddHours(8) }
                 );
             }
         }
 
-        return FormatStaticResponse(Langs.SASManual, botTokens.Count);
+        return FormatStaticResponse(Langs.SASManual, BotTokenCache.Count);
     }
-
 
     /// <summary>
     /// 手动汇报
     /// </summary>
     /// <returns></returns>
-    internal static async Task<string?> ResponseSASManualFeedback(IDictionary<string, BotInfo> botTokens)
+    internal static async Task<string?> ResponseSASManualFeedback()
     {
-        if (botTokens.Any())
+        if (!BotTokenCache.IsEmpty)
         {
-            await WebRequests.SASFeedback(botTokens).ConfigureAwait(false);
+            await WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
         }
 
-        return FormatStaticResponse(Langs.SASManual, botTokens.Count);
+        return FormatStaticResponse(Langs.SASManual, BotTokenCache.Count);
     }
 
     /// <summary>
     /// 批量导出Token
     /// </summary>
     /// <returns></returns>
-    internal static async Task<string?> ResponseSASDump(IDictionary<string, BotInfo> botTokens, string? desc = null)
+    internal static async Task<string?> ResponseSASDump(string? desc = null)
     {
         var bots = Bot.GetBots("ASF");
 
-        if (bots == null || !bots.Any())
+        if (bots == null || bots.Count == 0)
         {
             return FormatStaticResponse(string.Format(Langs.NoBotsAvilable));
         }
@@ -106,7 +105,7 @@ internal static class Command
         int count = 0;
         StringBuilder sb = new();
 
-        foreach (var (botName, botInfo) in botTokens)
+        foreach (var (botName, botInfo) in BotTokenCache)
         {
             if (!string.IsNullOrEmpty(botInfo.AccessToken))
             {
@@ -161,6 +160,42 @@ internal static class Command
         else
         {
             return FormatStaticResponse(string.Format(Langs.NoBotsAvilable));
+        }
+    }
+
+    internal static async void RefreshTokens(object? _)
+    {
+        var botNames = BotTokenCache.Keys.ToList();
+
+        int changeCount = 0;
+
+        foreach (string botName in botNames)
+        {
+            if (BotTokenCache.TryGetValue(botName, out var botInfo))
+            {
+                if (botInfo.ExpiredAt <= DateTime.Now)
+                {
+                    var bot = Bot.GetBot(botName);
+
+                    if (bot != null && bot.IsConnectedAndLoggedOn)
+                    {
+                        var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
+                        if (!string.IsNullOrEmpty(accessToken))
+                        {
+                            botInfo.AccessToken = accessToken;
+                            botInfo.ExpiredAt = DateTime.Now.AddHours(8);
+
+                            changeCount++;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (changeCount > 0)
+        {
+            ASFLogger.LogGenericInfo(string.Format("更新了 {0} 个Token", changeCount));
+            await WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
         }
     }
 }

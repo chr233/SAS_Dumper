@@ -17,11 +17,13 @@ namespace SAS_Dumper;
 internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
 {
     public string Name => "SAS Dumper";
-    public Version Version => typeof(SAS_Dumper).Assembly.GetName().Version ?? throw new ArgumentNullException(nameof(Version));
+    public Version Version => Assembly.GetExecutingAssembly().GetName().Version ?? throw new ArgumentNullException(nameof(Version));
 
     private bool ASFEBridge;
 
     private Timer? FeedBackTimer { get; set; }
+
+    private Timer? RefreshTokenTimer { get; set; }
 
     /// <summary>
     /// ASF启动事件
@@ -77,6 +79,13 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
             ASFLogger.LogGenericInfo(string.Format(Langs.ReadConfigError));
         }
 
+        RefreshTokenTimer = new Timer(
+            SAS.Command.RefreshTokens,
+            null,
+            TimeSpan.FromHours(1),
+            TimeSpan.FromHours(1)
+        );
+
         SASConfig = config ?? new();
 
         return Task.CompletedTask;
@@ -96,7 +105,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
 
         const string pluginId = nameof(SAS_Dumper);
         const string cmdPrefix = "SAS";
-        const string? repoName = null;
+        const string? repoName = "chr233/SAS_Dumper";
 
         ASFEBridge = AdapterBridge.InitAdapter(Name, pluginId, cmdPrefix, repoName, handler);
 
@@ -146,11 +155,11 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
                 "SASTOFF" when OnlineMode && access >= EAccess.Master =>
                     Task.FromResult(SAS.Command.ResponseSASController(false)),
                 "SASFRESH" when access >= EAccess.Master =>
-                    SAS.Command.ResponseSASFresh(BotTokenCache),
+                    SAS.Command.ResponseSASFresh(),
                 "SASMANUAL" when OnlineMode && access >= EAccess.Master =>
-                    SAS.Command.ResponseSASManualFeedback(BotTokenCache),
+                    SAS.Command.ResponseSASManualFeedback(),
                 "SASDUMP" when access >= EAccess.Master =>
-                    SAS.Command.ResponseSASDump(BotTokenCache, null),
+                    SAS.Command.ResponseSASDump(null),
 
                 _ => null,
             },
@@ -158,7 +167,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
             {
                 //SAS
                 "SASDUMP" when access >= EAccess.Master =>
-                    SAS.Command.ResponseSASDump(BotTokenCache, Utilities.GetArgsAsText(message, 1)),
+                    SAS.Command.ResponseSASDump(Utilities.GetArgsAsText(message, 1)),
 
                 _ => null,
             },
@@ -227,18 +236,19 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
     public async Task OnBotLoggedOn(Bot bot)
     {
         var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
+
         if (!string.IsNullOrEmpty(accessToken))
         {
             BotTokenCache.TryAdd(
                 bot.BotName,
-                new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken, }
+                new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken, ExpiredAt = DateTime.Now.AddHours(8) }
             );
         }
         else
         {
             ASFLogger.LogGenericWarning(string.Format(Langs.FetchTokenFailure, bot.BotName));
         }
-        _ = Task.Run(async () => await Misc.Handler.OnBotLoggedOn(bot).ConfigureAwait(false));
+        //_ = Task.Run(async () => await Misc.Handler.OnBotLoggedOn(bot).ConfigureAwait(false));
     }
 
     /// <summary>
