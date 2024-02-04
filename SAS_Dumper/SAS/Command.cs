@@ -15,7 +15,7 @@ internal static class Command
     /// <returns></returns>
     internal static async Task<string?> ResponseSASTest()
     {
-        HttpResponseMessage response = await WebRequests.TestSAS().ConfigureAwait(false);
+        var response = await WebRequests.TestSAS().ConfigureAwait(false);
 
         return FormatStaticResponse(Langs.SASTest, response.StatusCode == HttpStatusCode.OK ? Langs.Success : Langs.Failure);
     }
@@ -49,15 +49,17 @@ internal static class Command
 
         foreach (var bot in bots.Where(x => x.IsConnectedAndLoggedOn))
         {
-            var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
+            var accessToken = bot.AccessToken;
             if (!string.IsNullOrEmpty(accessToken))
             {
                 BotTokenCache.TryAdd(
                     bot.BotName,
-                    new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken, ExpiredAt = DateTime.Now.AddHours(8) }
+                    new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken }
                 );
             }
         }
+
+        await WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
 
         return FormatStaticResponse(Langs.SASManual, BotTokenCache.Count);
     }
@@ -123,8 +125,7 @@ internal static class Command
 
                 using var file = File.CreateText(filePath);
 
-                var setting = new JsonSerializerSettings
-                {
+                var setting = new JsonSerializerSettings {
                     DefaultValueHandling = DefaultValueHandling.Include
                 };
 
@@ -133,8 +134,7 @@ internal static class Command
 
                 try
                 {
-                    var p = new Process
-                    {
+                    var p = new Process {
                         StartInfo =
                         {
                             FileName = "explorer",
@@ -169,24 +169,22 @@ internal static class Command
 
         int changeCount = 0;
 
+        var diffBotInfo = new Dictionary<string, BotInfo>();
+
         foreach (string botName in botNames)
         {
             if (BotTokenCache.TryGetValue(botName, out var botInfo))
             {
-                if (botInfo.ExpiredAt <= DateTime.Now)
+                var bot = Bot.GetBot(botName);
+
+                if (bot != null && bot.IsConnectedAndLoggedOn)
                 {
-                    var bot = Bot.GetBot(botName);
-
-                    if (bot != null && bot.IsConnectedAndLoggedOn)
+                    var accessToken = bot.AccessToken;
+                    if (!string.IsNullOrEmpty(accessToken) && botInfo.AccessToken != accessToken)
                     {
-                        var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
-                        if (!string.IsNullOrEmpty(accessToken))
-                        {
-                            botInfo.AccessToken = accessToken;
-                            botInfo.ExpiredAt = DateTime.Now.AddHours(8);
-
-                            changeCount++;
-                        }
+                        botInfo.AccessToken = accessToken;
+                        diffBotInfo.Add(botName, botInfo);
+                        changeCount++;
                     }
                 }
             }
@@ -195,7 +193,7 @@ internal static class Command
         if (changeCount > 0)
         {
             ASFLogger.LogGenericInfo(string.Format("更新了 {0} 个Token", changeCount));
-            await WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
+            await WebRequests.SASFeedback(diffBotInfo).ConfigureAwait(false);
         }
     }
 }

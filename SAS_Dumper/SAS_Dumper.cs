@@ -36,7 +36,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
 
         if (additionalConfigProperties != null)
         {
-            foreach ((string configProperty, JToken configValue) in additionalConfigProperties)
+            foreach ((string configProperty, var configValue) in additionalConfigProperties)
             {
                 try
                 {
@@ -59,8 +59,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
             Http.BaseAddress = new(config.SASUrl);
             Http.DefaultRequestHeaders.Add("auth", config.SASPasswd);
             FeedBackTimer = new Timer(
-                async (_) =>
-                {
+                async (_) => {
                     if (SASConfig.Enabled)
                     {
                         await SAS.WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
@@ -139,8 +138,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
     private static Task<string?>? ResponseCommand(EAccess access, string cmd, string message, string[] args)
     {
         int argLength = args.Length;
-        return argLength switch
-        {
+        return argLength switch {
             0 => throw new InvalidOperationException(nameof(args.Length)),
             1 => cmd switch //不带参数
             {
@@ -218,8 +216,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
         }
         catch (Exception ex)
         {
-            _ = Task.Run(async () =>
-            {
+            _ = Task.Run(async () => {
                 await Task.Delay(500).ConfigureAwait(false);
                 Utils.ASFLogger.LogGenericException(ex);
             }).ConfigureAwait(false);
@@ -233,21 +230,23 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
     /// </summary>
     /// <param name="bot"></param>
     /// <returns></returns>
-    public async Task OnBotLoggedOn(Bot bot)
+    public Task OnBotLoggedOn(Bot bot)
     {
-        var (_, accessToken) = await bot.ArchiWebHandler.CachedAccessToken.GetValue().ConfigureAwait(false);
+        var accessToken = bot.AccessToken;
 
         if (!string.IsNullOrEmpty(accessToken))
         {
             BotTokenCache.TryAdd(
                 bot.BotName,
-                new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken, ExpiredAt = DateTime.Now.AddHours(8) }
+                new BotInfo { SteamID = bot.SteamID, AccessToken = accessToken }
             );
         }
         else
         {
             ASFLogger.LogGenericWarning(string.Format(Langs.FetchTokenFailure, bot.BotName));
         }
+
+        return Task.CompletedTask;
         //_ = Task.Run(async () => await Misc.Handler.OnBotLoggedOn(bot).ConfigureAwait(false));
     }
 
