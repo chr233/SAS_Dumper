@@ -2,7 +2,7 @@ using ArchiSteamFarm.Core;
 using ArchiSteamFarm.Plugins.Interfaces;
 using ArchiSteamFarm.Steam;
 
-using Newtonsoft.Json.Linq;
+
 
 using SAS_Dumper.Data;
 
@@ -10,6 +10,7 @@ using SteamKit2;
 using System.ComponentModel;
 using System.Composition;
 using System.Reflection;
+using System.Text.Json;
 
 namespace SAS_Dumper;
 
@@ -30,19 +31,19 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
     /// </summary>
     /// <param name="additionalConfigProperties"></param>
     /// <returns></returns>
-    public Task OnASFInit(IReadOnlyDictionary<string, JToken>? additionalConfigProperties = null)
+    public Task OnASFInit(IReadOnlyDictionary<string, JsonElement>? additionalConfigProperties = null)
     {
         PluginConfig? config = null;
 
         if (additionalConfigProperties != null)
         {
-            foreach ((string configProperty, var configValue) in additionalConfigProperties)
+            foreach (var (configProperty, configValue) in additionalConfigProperties)
             {
                 try
                 {
-                    if (configProperty == "SASConfig")
+                    if (configProperty == "SASConfig" && configValue.ValueKind == JsonValueKind.Object)
                     {
-                        config = configValue.ToObject<PluginConfig>();
+                        config = configValue.Deserialize<PluginConfig>();
                         break;
                     }
                 }
@@ -59,7 +60,8 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
             Http.BaseAddress = new(config.SASUrl);
             Http.DefaultRequestHeaders.Add("auth", config.SASPasswd);
             FeedBackTimer = new Timer(
-                async (_) => {
+                async (_) =>
+                {
                     if (SASConfig.Enabled)
                     {
                         await SAS.WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
@@ -138,7 +140,8 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
     private static Task<string?>? ResponseCommand(EAccess access, string cmd, string message, string[] args)
     {
         int argLength = args.Length;
-        return argLength switch {
+        return argLength switch
+        {
             0 => throw new InvalidOperationException(nameof(args.Length)),
             1 => cmd switch //不带参数
             {
@@ -216,7 +219,8 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
         }
         catch (Exception ex)
         {
-            _ = Task.Run(async () => {
+            _ = Task.Run(async () =>
+            {
                 await Task.Delay(500).ConfigureAwait(false);
                 Utils.ASFLogger.LogGenericException(ex);
             }).ConfigureAwait(false);

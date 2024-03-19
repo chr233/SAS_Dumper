@@ -1,9 +1,10 @@
-using Newtonsoft.Json;
+using ArchiSteamFarm.Helpers.Json;
 
 using SAS_Dumper.Data;
 
 using System.Net;
 using System.Text;
+using System.Text.Json;
 
 namespace SAS_Dumper.SAS;
 
@@ -49,7 +50,7 @@ internal static class WebRequests
 
         if (payload.Count > 0)
         {
-            string json = JsonConvert.SerializeObject(payload);
+            string json = JsonSerializer.Serialize(payload, JsonUtilities.DefaultJsonSerialierOptions);
 
             var request = new HttpRequestMessage(HttpMethod.Post, "/adv/bots/muli")
             {
@@ -64,7 +65,7 @@ internal static class WebRequests
 
             if (success)
             {
-                var result = JsonConvert.DeserializeObject<SASResult>(rawResponse);
+                var result = JsonSerializer.Deserialize<SASResult>(rawResponse, JsonUtilities.DefaultJsonSerialierOptions);
 
                 if (result != null)
                 {

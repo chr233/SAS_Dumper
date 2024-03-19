@@ -1,15 +1,16 @@
-using Newtonsoft.Json;
+
+using System.Text.Json.Serialization;
 
 namespace SAS_Dumper.Data;
 
 internal sealed class SASResult
 {
-    [JsonProperty(PropertyName = "code")]
+    [JsonPropertyName("code")]
     internal int Code { get; set; }
 
-    [JsonProperty(PropertyName = "msg")]
+    [JsonPropertyName("msg")]
     internal string Message { get; set; } = "";
 
-    [JsonProperty(PropertyName = "result")]
+    [JsonPropertyName("result")]
     internal List<List<string>> Result { get; set; } = [];
 }

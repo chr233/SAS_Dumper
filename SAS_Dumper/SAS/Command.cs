@@ -1,5 +1,4 @@
 using ArchiSteamFarm.Steam;
-using Newtonsoft.Json;
 using SAS_Dumper.Data;
 using System.Diagnostics;
 using System.Net;
@@ -125,16 +124,13 @@ internal static class Command
 
                 using var file = File.CreateText(filePath);
 
-                var setting = new JsonSerializerSettings {
-                    DefaultValueHandling = DefaultValueHandling.Include
-                };
-
                 await file.WriteAsync(sb).ConfigureAwait(false);
                 await file.FlushAsync().ConfigureAwait(false);
 
                 try
                 {
-                    var p = new Process {
+                    var p = new Process
+                    {
                         StartInfo =
                         {
                             FileName = "explorer",
