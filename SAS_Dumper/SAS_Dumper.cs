@@ -72,7 +72,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
             );
 
             ASFLogger.LogGenericInfo(string.Format(Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
-
+            
             OnlineMode = true;
         }
         else
