@@ -2,6 +2,10 @@
 
 ![AutoBuild][workflow_b] [![release][release_b]][release] [![Download][download_b]][release] [![License][license_b]][license]
 
+## 说明
+
+本项目已过时, 并且停止维护, 已有新的多线程打赏插件替代本项目, 联系 [chr@chrxw.com](chr@chrxw.com)
+
 ## 适配说明
 
 | 插件版本                                                               | 兼容 ASF 版本 |

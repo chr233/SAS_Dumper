@@ -60,11 +60,18 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
             Http.BaseAddress = new(config.SASUrl);
             Http.DefaultRequestHeaders.Add("auth", config.SASPasswd);
             FeedBackTimer = new Timer(
-                async (_) =>
-                {
+                async (_) => {
                     if (SASConfig.Enabled)
                     {
-                        await SAS.WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
+                        try
+                        {
+                            await SAS.WebRequests.SASFeedback(BotTokenCache).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            ASFLogger.LogGenericException(ex);
+                            ASFLogger.LogGenericError("网络请求失败");
+                        }
                     }
                 }, null,
                 TimeSpan.Zero,
@@ -72,7 +79,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
             );
 
             ASFLogger.LogGenericInfo(string.Format(Langs.PluginState, SASConfig.Enabled ? Langs.Enabled : Langs.Disabled));
-            
+
             OnlineMode = true;
         }
         else
@@ -140,8 +147,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
     private static Task<string?>? ResponseCommand(EAccess access, string cmd, string message, string[] args)
     {
         int argLength = args.Length;
-        return argLength switch
-        {
+        return argLength switch {
             0 => throw new InvalidOperationException(nameof(args.Length)),
             1 => cmd switch //不带参数
             {
@@ -219,8 +225,7 @@ internal sealed class SAS_Dumper : IASF, IBotCommand2, IBotConnection, IBot
         }
         catch (Exception ex)
         {
-            _ = Task.Run(async () =>
-            {
+            _ = Task.Run(async () => {
                 await Task.Delay(500).ConfigureAwait(false);
                 Utils.ASFLogger.LogGenericException(ex);
             }).ConfigureAwait(false);
